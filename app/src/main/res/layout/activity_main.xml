@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <EditText
+        android:id="@+id/inputCorreo"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="@string/correo"
+        android:inputType="textEmailAddress"
+        android:layout_marginBottom="12dp"
+        android:importantForAutofill="yes"
+        android:autofillHints="emailAddress"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
+
+    <EditText
+        android:id="@+id/inputContrasena"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="@string/contrasena"
+        android:inputType="textPassword"
+        android:layout_marginBottom="16dp"
+        android:importantForAutofill="yes"
+        android:autofillHints="password"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
+
+    <Button
+        android:id="@+id/btnIniciarSesion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/iniciar_sesion"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
+
+    <Button
+        android:id="@+id/btnIrARegistro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/ir_a_registro"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
+
+</LinearLayout>
