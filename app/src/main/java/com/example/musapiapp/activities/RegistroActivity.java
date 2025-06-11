@@ -299,9 +299,8 @@ public class RegistroActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null &&
                         response.body().getDatos() != null) {
 
-                    Intent result = new Intent();
-                    result.putExtra("registro_exitoso", true);
-                    setResult(RESULT_OK, result);
+                    Intent intent = new Intent(RegistroActivity.this, MenuPrincipalActivity.class);
+                    startActivity(intent);
                     finish();
                 } else {
                     String msg = "Código: " + response.code();
