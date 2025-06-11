@@ -2,9 +2,11 @@ package com.example.musapiapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -17,10 +19,6 @@ import com.example.musapiapp.dto.UsuarioDTO;
 import com.example.musapiapp.dto.UsuarioRegistro;
 import com.example.musapiapp.network.ApiCliente;
 import com.example.musapiapp.network.ServicioUsuario;
-import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
-import android.view.View;
-import android.widget.ImageView;
 
 import java.io.IOException;
 import java.text.Collator;
@@ -36,21 +34,23 @@ import retrofit2.Response;
 
 public class RegistroActivity extends AppCompatActivity {
 
-    private EditText inputNombre, inputNombreUsuario, inputCorreo, inputContrasena;
+    private EditText inputNombreUsuario, inputCorreo, inputContrasena;
     private Spinner spinnerPais;
-    private Button btnRegistrar;
+    private Button btnRegistrar, btnCancelar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registro);
 
-        inputNombre = findViewById(R.id.inputNombre);
         inputNombreUsuario = findViewById(R.id.inputNombreUsuario);
-        inputCorreo = findViewById(R.id.inputCorreo);
-        inputContrasena = findViewById(R.id.inputContrasena);
-        spinnerPais = findViewById(R.id.spinnerPais);
-        btnRegistrar = findViewById(R.id.btnRegistrar);
+        inputCorreo        = findViewById(R.id.inputCorreo);
+        inputContrasena    = findViewById(R.id.inputContrasena);
+        spinnerPais        = findViewById(R.id.spinnerPais);
+        btnRegistrar       = findViewById(R.id.btnRegistrar);
+        btnCancelar        = findViewById(R.id.btnCancelar);
+
+        btnCancelar.setOnClickListener(v -> finish());
 
         List<Pais> paises = new ArrayList<>(Arrays.asList(
                 new Pais("AF", "Afganistán"),
@@ -265,43 +265,34 @@ public class RegistroActivity extends AppCompatActivity {
                 .setDuration(2500)
                 .start();
 
-        /*final View formulario = findViewById(R.id.contenedorFormulario);
-        float offset = getResources().getDisplayMetrics().density * 50;
-        ObjectAnimator mover = ObjectAnimator.ofFloat(formulario, "translationX", -offset, offset);
-        mover.setDuration(5000);
-        mover.setRepeatMode(ValueAnimator.REVERSE);
-        mover.setRepeatCount(ValueAnimator.INFINITE);
-        mover.start(); */
-
         btnRegistrar.setOnClickListener(v -> registrarUsuario());
     }
 
     private void registrarUsuario() {
-        String nombre        = inputNombre.getText().toString().trim();
-        String nombreUsuario = inputNombreUsuario.getText().toString().trim();
-        String correo        = inputCorreo.getText().toString().trim();
-        String contrasena    = inputContrasena.getText().toString().trim();
-        Pais paisObj         = (Pais) spinnerPais.getSelectedItem();
+        String usuarioText = inputNombreUsuario.getText().toString().trim();
+        String correo      = inputCorreo.getText().toString().trim();
+        String contrasena  = inputContrasena.getText().toString().trim();
+        Pais paisObj       = (Pais) spinnerPais.getSelectedItem();
 
-        if (nombre.isEmpty() || nombreUsuario.isEmpty() ||
-                correo.isEmpty() || contrasena.isEmpty() || paisObj == null) {
+        if (usuarioText.isEmpty() || correo.isEmpty() ||
+                contrasena.isEmpty() || paisObj == null) {
             Toast.makeText(this, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
         UsuarioRegistro nuevoUsuario = new UsuarioRegistro(
-                nombre,
-                nombreUsuario,
+                usuarioText,
+                usuarioText,
                 correo,
                 paisObj.getCodigo(),
                 contrasena
         );
 
-        ServicioUsuario servicio = ApiCliente.getClient(this).create(ServicioUsuario.class);
-        Call<RespuestaCliente<UsuarioDTO>> call =
-                servicio.registrarUsuario(nuevoUsuario);
+        ServicioUsuario servicio = ApiCliente
+                .getClient(this)
+                .create(ServicioUsuario.class);
 
-        call.enqueue(new Callback<RespuestaCliente<UsuarioDTO>>() {
+        servicio.registrarUsuario(nuevoUsuario).enqueue(new Callback<RespuestaCliente<UsuarioDTO>>() {
             @Override
             public void onResponse(Call<RespuestaCliente<UsuarioDTO>> call,
                                    Response<RespuestaCliente<UsuarioDTO>> response) {
@@ -312,9 +303,7 @@ public class RegistroActivity extends AppCompatActivity {
                     result.putExtra("registro_exitoso", true);
                     setResult(RESULT_OK, result);
                     finish();
-
                 } else {
-                    // Error en respuesta HTTP
                     String msg = "Código: " + response.code();
                     try {
                         msg += "\n" + response.errorBody().string();
