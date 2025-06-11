@@ -11,9 +11,9 @@ import retrofit2.http.POST;
 
 public interface ServicioUsuario {
 
-    @POST("usuarios/login")
-    Call<RespuestaCliente<UsuarioDTO>> iniciarSesion(@Body SolicitudInicioSesion solicitud);
     @POST("usuarios/registrar")
     Call<RespuestaCliente<UsuarioDTO>> registrarUsuario(@Body UsuarioRegistro usuario);
+    @POST("usuarios/login")
+    Call<RespuestaCliente<UsuarioDTO>> iniciarSesion(@Body SolicitudInicioSesion solicitud);
 
 }

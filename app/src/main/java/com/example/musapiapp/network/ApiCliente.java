@@ -10,6 +10,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;   // ← Import agregado
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -19,22 +20,28 @@ public class ApiCliente {
 
     public static Retrofit getClient(Context context) {
         if (retrofit == null) {
+            Interceptor authInterceptor = new Interceptor() {
+                @Override
+                public Response intercept(Chain chain) throws IOException {
+                    Request original = chain.request();
+                    Request.Builder builder = original.newBuilder();
+
+                    String token = Preferencias.obtenerToken(context);
+                    if (token != null) {
+                        builder.header("Authorization", "Bearer " + token);
+                    }
+
+                    Request nuevaPeticion = builder.build();
+                    return chain.proceed(nuevaPeticion);
+                }
+            };
+
+            HttpLoggingInterceptor logInterceptor = new HttpLoggingInterceptor();
+            logInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
             OkHttpClient client = new OkHttpClient.Builder()
-                    .addInterceptor(new Interceptor() {
-                        @Override
-                        public Response intercept(Chain chain) throws IOException {
-                            Request original = chain.request();
-                            Request.Builder builder = original.newBuilder();
-
-                            String token = Preferencias.obtenerToken(context);
-                            if (token != null) {
-                                builder.header("Authorization", "Bearer " + token);
-                            }
-
-                            Request nuevaPeticion = builder.build();
-                            return chain.proceed(nuevaPeticion);
-                        }
-                    })
+                    .addInterceptor(authInterceptor)
+                    .addInterceptor(logInterceptor)
                     .build();
 
             retrofit = new Retrofit.Builder()
@@ -43,7 +50,6 @@ public class ApiCliente {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }
-
         return retrofit;
     }
 }
