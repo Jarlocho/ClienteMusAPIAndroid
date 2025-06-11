@@ -6,6 +6,9 @@
     <string name="correo">Correo electrónico</string>
     <string name="contrasena">Contraseña</string>
     <string name="iniciar_sesion">Iniciar sesión</string>
+    <string name="login_titulo">Iniciar sesión</string>
+    <string name="salir">Salir</string>
+
 
     <!-- Registro -->
     <string name="nombre">Nombre</string>

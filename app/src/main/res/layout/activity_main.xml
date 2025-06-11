@@ -1,51 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center">
+    android:background="@drawable/gradient_bg"
+    android:padding="24dp">
 
-    <EditText
-        android:id="@+id/inputCorreo"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="@string/correo"
-        android:inputType="textEmailAddress"
-        android:layout_marginBottom="12dp"
-        android:importantForAutofill="yes"
-        android:autofillHints="emailAddress"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
-
-    <EditText
-        android:id="@+id/inputContrasena"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="@string/contrasena"
-        android:inputType="textPassword"
-        android:layout_marginBottom="16dp"
-        android:importantForAutofill="yes"
-        android:autofillHints="password"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
-
-    <Button
-        android:id="@+id/btnIniciarSesion"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/iniciar_sesion"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        android:gravity="center_horizontal">
 
-    <Button
-        android:id="@+id/btnIrARegistro"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/ir_a_registro"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp" />
+        <!-- Logo arriba -->
+        <ImageView
+            android:id="@+id/imgLogoLogin"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/musapi_logo"
+            android:contentDescription="@string/logo_desc"
+            android:alpha="0" />
 
-</LinearLayout>
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tvTituloLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/login_titulo"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="@color/azul_oscuro"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Correo -->
+        <EditText
+            android:id="@+id/inputCorreoLogin"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="@string/correo"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/shape_edittext"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Contraseña -->
+        <EditText
+            android:id="@+id/inputContrasenaLogin"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="@string/contrasena"
+            android:inputType="textPassword"
+            android:background="@drawable/shape_edittext"
+            android:padding="12dp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Botones -->
+        <Button
+            android:id="@+id/btnIniciarSesion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/iniciar_sesion"
+            android:background="@drawable/shape_button"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnIrARegistro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ir_a_registro"
+            android:background="@drawable/shape_button"
+            android:textColor="@android:color/white"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnSalir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/salir"
+            android:background="@drawable/shape_button"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp"/>
+
+    </LinearLayout>
+</ScrollView>

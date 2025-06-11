@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 import android.content.Intent;
 import android.widget.Button;
@@ -31,65 +32,70 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        inputCorreo = findViewById(R.id.inputCorreo);
-        inputContrasena = findViewById(R.id.inputContrasena);
-        btnIniciarSesion = findViewById(R.id.btnIniciarSesion);
+        ImageView imgLogo = findViewById(R.id.imgLogoLogin);
+        imgLogo.animate().alpha(1f).setDuration(2500).start();
+        EditText inputCorreo = findViewById(R.id.inputCorreoLogin);
+        EditText inputContrasena = findViewById(R.id.inputContrasenaLogin);
+        Button btnIniciar = findViewById(R.id.btnIniciarSesion);
+        Button btnRegistro = findViewById(R.id.btnIrARegistro);
+        Button btnSalir = findViewById(R.id.btnSalir);
 
-        btnIniciarSesion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                iniciarSesion();
-            }
-        });
-        Button btnIrARegistro = findViewById(R.id.btnIrARegistro);
+        imgLogo.animate().alpha(1f).setDuration(2500).start();
 
-        btnIrARegistro.setOnClickListener(v -> {
+        btnRegistro.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, RegistroActivity.class);
             startActivityForResult(intent, 1);
         });
 
-    }
+        btnSalir.setOnClickListener(v -> finish());
 
-    private void iniciarSesion() {
-        String correo = inputCorreo.getText().toString().trim();
-        String contrasena = inputContrasena.getText().toString().trim();
+        btnIniciar.setOnClickListener(v -> {
+            String correo = inputCorreo.getText().toString().trim();
+            String contr = inputContrasena.getText().toString().trim();
 
-        if (correo.isEmpty() || contrasena.isEmpty()) {
-            Toast.makeText(this, "Por favor, completa todos los campos", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        SolicitudInicioSesion solicitud = new SolicitudInicioSesion(correo, contrasena);
-
-        ServicioUsuario servicio = ApiCliente.getClient(MainActivity.this).create(ServicioUsuario.class);
-        Call<RespuestaCliente<UsuarioDTO>> llamada = servicio.iniciarSesion(solicitud);
-
-        llamada.enqueue(new Callback<RespuestaCliente<UsuarioDTO>>() {
-            @Override
-            public void onResponse(Call<RespuestaCliente<UsuarioDTO>> call, Response<RespuestaCliente<UsuarioDTO>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    UsuarioDTO usuario = response.body().getDatos();
-                    Preferencias.guardarToken(MainActivity.this, usuario.getToken());
-                    Toast.makeText(MainActivity.this, "Bienvenido " + usuario.getNombreUsuario(), Toast.LENGTH_LONG).show();
-
-                } else {
-                    Toast.makeText(MainActivity.this, "Credenciales incorrectas", Toast.LENGTH_SHORT).show();
-                }
+            if (correo.isEmpty() || contr.isEmpty()) {
+                Toast.makeText(this, "Completa ambos campos", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (!android.util.Patterns.EMAIL_ADDRESS.matcher(correo).matches()) {
+                Toast.makeText(this, "Correo no válido", Toast.LENGTH_SHORT).show();
+                return;
             }
 
-            @Override
-            public void onFailure(Call<RespuestaCliente<UsuarioDTO>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Error de conexión: " + t.getMessage(), Toast.LENGTH_LONG).show();
-            }
+            ServicioUsuario servicio = ApiCliente.getClient(this)
+                    .create(ServicioUsuario.class);
+            servicio.iniciarSesion(new SolicitudInicioSesion(correo, contr))
+                    .enqueue(new Callback<RespuestaCliente<UsuarioDTO>>() {
+                        @Override
+                        public void onResponse(Call<RespuestaCliente<UsuarioDTO>> call,
+                                               Response<RespuestaCliente<UsuarioDTO>> response) {
+                            if (response.isSuccessful() && response.body()!=null && response.body().getDatos()!=null) {
+                                UsuarioDTO u = response.body().getDatos();
+                                Preferencias.guardarToken(MainActivity.this, u.getToken());
+                                Toast.makeText(MainActivity.this,
+                                        "Bienvenido " + u.getNombreUsuario(),
+                                        Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(MainActivity.this,
+                                        "Credenciales incorrectas",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        @Override
+                        public void onFailure(Call<RespuestaCliente<UsuarioDTO>> call, Throwable t) {
+                            Toast.makeText(MainActivity.this,
+                                    "Error de conexión: " + t.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == 1 && resultCode == RESULT_OK) {
-            if (data != null && data.getBooleanExtra("registro_exitoso", false)) {
+        if (requestCode==1 && resultCode==RESULT_OK) {
+            if (data!=null && data.getBooleanExtra("registro_exitoso", false)) {
                 Toast.makeText(this, "¡Cuenta creada con éxito!", Toast.LENGTH_LONG).show();
             }
         }
