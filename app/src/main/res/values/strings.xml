@@ -19,4 +19,17 @@
     <string name="logo_desc">Logo de MusAPI</string>
     <string name="registrar_titulo">Registrar</string>
     <string name="cancelar">Cancelar</string>
+
+    <!-- Menú Principal -->
+    <string name="menu_principal_titulo">MENÚ PRINCIPAL</string>
+    <string name="menu_opcion_administracion">Administración</string>
+    <string name="menu_opcion_buscar">Buscar contenido</string>
+    <string name="menu_opcion_perfil_artista">Perfil de artista</string>
+    <string name="menu_opcion_perfil_usuario">Perfil de usuario</string>
+    <string name="menu_opcion_crear_album">Crear álbum</string>
+    <string name="menu_opcion_crear_lista">Crear lista de reproducción</string>
+    <string name="menu_opcion_cerrar_sesion">Cerrar sesión</string>
+    <string name="menu_opcion_salir_app">Salir de la app</string>
+
+
 </resources>

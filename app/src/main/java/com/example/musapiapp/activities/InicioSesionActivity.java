@@ -22,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class InicioSesionActivity extends AppCompatActivity {
 
     private EditText inputCorreoLogin;
     private EditText inputContrasenaLogin;
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         imgLogo.animate().alpha(1f).setDuration(2500).start();
 
         btnIrARegistro.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, RegistroActivity.class);
+            Intent intent = new Intent(InicioSesionActivity.this, RegistroActivity.class);
             startActivityForResult(intent, 1);
         });
 
@@ -78,15 +78,15 @@ public class MainActivity extends AppCompatActivity {
                                 && response.body().getDatos() != null) {
                             UsuarioDTO u = response.body().getDatos();
 
-                            Preferencias.guardarToken(MainActivity.this, u.getToken());
-                            Toast.makeText(MainActivity.this,
+                            Preferencias.guardarToken(InicioSesionActivity.this, u.getToken());
+                            Toast.makeText(InicioSesionActivity.this,
                                     "Bienvenido " + u.getNombreUsuario(),
                                     Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(MainActivity.this, MenuPrincipalActivity.class);
+                            Intent intent = new Intent(InicioSesionActivity.this, MenuPrincipalActivity.class);
                             startActivity(intent);
                             finish();
                         } else {
-                            Toast.makeText(MainActivity.this,
+                            Toast.makeText(InicioSesionActivity.this,
                                     "Credenciales incorrectas",
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(Call<RespuestaCliente<UsuarioDTO>> call,
                                           Throwable t) {
-                        Toast.makeText(MainActivity.this,
+                        Toast.makeText(InicioSesionActivity.this,
                                 "Error de conexión: " + t.getMessage(),
                                 Toast.LENGTH_LONG).show();
                     }

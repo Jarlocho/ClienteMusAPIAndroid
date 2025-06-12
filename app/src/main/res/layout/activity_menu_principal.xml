@@ -1,14 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@android:color/white"
+    android:padding="16dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="MENÚ PRINCIPAL"
-        android:textSize="24sp"
-        android:layout_gravity="center"/>
-</FrameLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Título -->
+        <TextView
+            android:id="@+id/tvTituloMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_principal_titulo"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Botones de navegación -->
+        <Button
+            android:id="@+id/btnAdministracion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_opcion_administracion"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnBuscarContenido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_opcion_buscar"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnPerfilArtista"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_opcion_perfil_artista"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnPerfilUsuario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_opcion_perfil_usuario"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnCrearAlbum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_opcion_crear_album"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnCrearLista"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_opcion_crear_lista"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnCerrarSesion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_opcion_cerrar_sesion"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btnSalirApp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_opcion_salir_app"/>
+
+    </LinearLayout>
+</ScrollView>

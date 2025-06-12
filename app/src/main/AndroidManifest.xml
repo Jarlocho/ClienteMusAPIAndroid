@@ -20,7 +20,7 @@
             android:name=".activities.RegistroActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.InicioSesionActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -29,6 +29,13 @@
 
         </activity>
         <activity android:name=".activities.MenuPrincipalActivity" />
+        <activity android:name=".activities.MenuAdminActivity"/>
+        <activity android:name=".activities.BusquedaActivity"/>
+        <activity android:name=".activities.PerfilArtistaActivity"/>
+        <activity android:name=".activities.PerfilUsuarioActivity"/>
+        <activity android:name=".activities.CrearAlbumActivity"/>
+        <activity android:name=".activities.CrearListaDeReproduccionActivity"/>
+
     </application>
 
 </manifest>
