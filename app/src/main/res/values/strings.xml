@@ -31,5 +31,15 @@
     <string name="menu_opcion_cerrar_sesion">Cerrar sesión</string>
     <string name="menu_opcion_salir_app">Salir de la app</string>
 
-
+    <string name="hint_buscar">Buscar…</string>
+    <string name="label_albumes">Álbumes</string>
+    <string name="label_listas">Listas</string>
+    <string name="label_artistas">Artistas</string>
+    <!-- content descriptions -->
+    <string name="desc_cerrar_sesion">Cerrar sesión</string>
+    <string name="desc_buscar">Buscar contenido</string>
+    <string name="desc_administracion">Abrir administración</string>
+    <string name="desc_perfil_usuario">Ver perfil de usuario</string>
+    <string name="desc_crear_lista">Crear lista de reproducción</string>
+    <string name="desc_volver">Volver</string>
 </resources>
