@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tipos_busqueda">
+        <item>Canción</item>
+        <item>Álbum</item>
+        <item>Artista</item>
+    </string-array>
+</resources>

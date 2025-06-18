@@ -23,7 +23,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MenuPrincipalActivity extends AppCompatActivity {
-    private ImageButton btnCerrarSesion, btnBuscar, btnMenuAdmin, btnPerfilUsuario, btnCrearLista;
+    public static final String EXTRA_QUERY = "extra_query";
+
+    private ImageButton btnCerrarSesion,
+            btnBuscar,
+            btnMenuAdmin,
+            btnPerfilUsuario,
+            btnCrearLista;
     private EditText etBusqueda;
     private LinearLayout llAlbumes, llListas, llArtistas;
 
@@ -42,112 +48,104 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         llListas         = findViewById(R.id.ll_listas);
         llArtistas       = findViewById(R.id.ll_artistas);
 
-        // Navegación estática
         btnCerrarSesion.setOnClickListener(v -> {
             startActivity(new Intent(this, InicioSesionActivity.class));
             finish();
         });
+
         btnBuscar.setOnClickListener(v -> {
+            String texto = etBusqueda.getText().toString().trim();
             Intent intent = new Intent(this, BusquedaActivity.class);
-            intent.putExtra("QUERY", etBusqueda.getText().toString());
+            intent.putExtra(EXTRA_QUERY, texto);
             startActivity(intent);
         });
-        btnMenuAdmin.setOnClickListener(v ->
-                startActivity(new Intent(this, MenuAdminActivity.class))
-        );
-        btnPerfilUsuario.setOnClickListener(v ->
-                startActivity(new Intent(this, PerfilUsuarioActivity.class))
-        );
-        btnCrearLista.setOnClickListener(v ->
-                startActivity(new Intent(this, CrearListaDeReproduccionActivity.class))
-        );
 
-        // Datos de prueba (luego reemplaza por tu llamada real a la API)
+        btnMenuAdmin    .setOnClickListener(v -> startActivity(new Intent(this, MenuAdminActivity.class)));
+        btnPerfilUsuario.setOnClickListener(v -> startActivity(new Intent(this, PerfilUsuarioActivity.class)));
+        btnCrearLista   .setOnClickListener(v -> startActivity(new Intent(this, CrearListaDeReproduccionActivity.class)));
+
+        // --- Datos de prueba: reemplazar por llamada real a la API ---
         List<BusquedaAlbumDTO> albumes = Arrays.asList(
-                new BusquedaAlbumDTO(1, "Trench", "Twenty One Pilots", "2021-04-16", "/fotos/trench.jpg", null),
-                new BusquedaAlbumDTO(2, "Blurryface", "Twenty One Pilots", "2015-05-12", "/fotos/blurryface.jpg", null)
+                new BusquedaAlbumDTO(1, "Trench",       "Twenty One Pilots", "2021-04-16", "/fotos/trench.jpg",    null),
+                new BusquedaAlbumDTO(2, "Blurryface",   "Twenty One Pilots", "2015-05-12", "/fotos/blurryface.jpg", null)
         );
         List<ListaReproduccionDTO> listas = Arrays.asList(
-                new ListaReproduccionDTO("Favoritas", "Mis top tracks", 123, "/fotos/favoritas.jpg"),
-                new ListaReproduccionDTO("Reciente",  "Reproducciones recientes", 123, "/fotos/reciente.jpg")
+                new ListaReproduccionDTO("Favoritas", "Mis top tracks",            123, "/fotos/favoritas.jpg"),
+                new ListaReproduccionDTO("Reciente",  "Reproducciones recientes",   123, "/fotos/reciente.jpg")
         );
         List<BusquedaArtistaDTO> artistas = Arrays.asList(
                 new BusquedaArtistaDTO(1, "Muse",            "muse_oficial",   "Desc", "/fotos/muse.jpg",   null),
                 new BusquedaArtistaDTO(2, "Imagine Dragons", "imagine_dragons","Desc", "/fotos/id.jpg",     null)
         );
 
-        // Inflar sección Álbumes
+        // Inflar álbumes
         for (BusquedaAlbumDTO alb : albumes) {
             View item = LayoutInflater.from(this)
                     .inflate(R.layout.item_contenido, llAlbumes, false);
-
-            ImageView ivFoto    = item.findViewById(R.id.imgFoto);
-            TextView tvNombre   = item.findViewById(R.id.tvNombre);
-            TextView tvAutor    = item.findViewById(R.id.tvAutor);
-            Button btnGuardar   = item.findViewById(R.id.btnGuardar);
-            Button btnDetalles  = item.findViewById(R.id.btnVerDetalles);
-            ImageButton btnPlay = item.findViewById(R.id.btnReproducir);
+            ImageView    ivFoto   = item.findViewById(R.id.imgFoto);
+            TextView     tvNombre = item.findViewById(R.id.tvNombre);
+            TextView     tvAutor  = item.findViewById(R.id.tvAutor);
+            Button       btnSave  = item.findViewById(R.id.btnGuardar);
+            Button       btnDet   = item.findViewById(R.id.btnVerDetalles);
+            ImageButton  btnPlay  = item.findViewById(R.id.btnReproducir);
 
             tvNombre.setText(alb.getNombreAlbum());
-            tvAutor.setText(alb.getNombreArtista());
+            tvAutor .setText(alb.getNombreArtista());
+            btnSave .setVisibility(View.GONE);
             Glide.with(this)
-                    .load("https://api.tuapp.com" + alb.getUrlFoto())
+                    .load("http://10.0.2.2:8080" + alb.getUrlFoto())
                     .into(ivFoto);
 
-            btnGuardar.setVisibility(View.GONE);
-            btnDetalles.setOnClickListener(v -> {
-                Intent intent = new Intent(this, AlbumActivity.class);
-                intent.putExtra(AlbumActivity.EXTRA_ALBUM, alb); // pasamos alb, no AlbumDTO
-                startActivity(intent);
+            btnDet.setOnClickListener(v -> {
+                Intent i = new Intent(this, AlbumActivity.class);
+                i.putExtra(AlbumActivity.EXTRA_ALBUM, alb);
+                startActivity(i);
             });
-            btnPlay.setOnClickListener(v -> {
-                // TODO: lógica de reproducción
-            });
+            // TODO: btnPlay.setOnClickListener → reproducción
 
             llAlbumes.addView(item);
         }
 
-        // Inflar sección Listas
+        // Inflar listas
         for (ListaReproduccionDTO lst : listas) {
             View item = LayoutInflater.from(this)
                     .inflate(R.layout.item_contenido, llListas, false);
+            TextView    tvN = item.findViewById(R.id.tvNombre);
+            TextView    tvA = item.findViewById(R.id.tvAutor);
+            Button      bs  = item.findViewById(R.id.btnGuardar);
+            Button      bd  = item.findViewById(R.id.btnVerDetalles);
+            ImageButton bp  = item.findViewById(R.id.btnReproducir);
 
-            TextView tvNombre  = item.findViewById(R.id.tvNombre);
-            TextView tvAutor   = item.findViewById(R.id.tvAutor);
-            Button btnGuardar  = item.findViewById(R.id.btnGuardar);
-            Button btnDetalles = item.findViewById(R.id.btnVerDetalles);
-            ImageButton btnPlay= item.findViewById(R.id.btnReproducir);
-
-            tvNombre.setText(lst.getNombre());
-            tvAutor.setVisibility(View.GONE);
-            btnPlay.setVisibility(View.GONE);
-            btnGuardar.setVisibility(View.GONE);
-
-            btnDetalles.setOnClickListener(v -> {
-                // TODO: navegar a pantalla de lista
-            });
+            tvN.setText(lst.getNombre());
+            tvA.setVisibility(View.GONE);
+            bs .setVisibility(View.GONE);
+            bp .setVisibility(View.GONE);
+            // TODO: bd.setOnClickListener → próximas pantallas
 
             llListas.addView(item);
         }
 
-        // Inflar sección Artistas
+        // Inflar artistas
         for (BusquedaArtistaDTO art : artistas) {
             View item = LayoutInflater.from(this)
                     .inflate(R.layout.item_contenido, llArtistas, false);
+            TextView    tvN  = item.findViewById(R.id.tvNombre);
+            TextView    tvA  = item.findViewById(R.id.tvAutor);
+            Button      bs   = item.findViewById(R.id.btnGuardar);
+            ImageButton bp   = item.findViewById(R.id.btnReproducir);
+            ImageView   iv   = item.findViewById(R.id.imgFoto);
 
-            TextView tvNombre  = item.findViewById(R.id.tvNombre);
-            TextView tvAutor   = item.findViewById(R.id.tvAutor);
-            Button btnGuardar  = item.findViewById(R.id.btnGuardar);
-            ImageButton btnPlay= item.findViewById(R.id.btnReproducir);
+            tvN .setText(art.getNombre());
+            tvA .setText("@" + art.getNombreUsuario());
+            bs  .setText(R.string.seguir);
+            bp  .setVisibility(View.GONE);
+            Glide.with(this)
+                    .load("http://10.0.2.2:8080" + art.getUrlFoto())
+                    .into(iv);
 
-            tvNombre.setText(art.getNombre());
-            tvAutor.setText("@" + art.getNombreUsuario());
-            btnPlay.setVisibility(View.GONE);
-            btnGuardar.setText("Seguir");
-            btnGuardar.setOnClickListener(v -> {
+            bs.setOnClickListener(v -> {
                 // TODO: lógica de seguir
             });
-
             llArtistas.addView(item);
         }
     }
