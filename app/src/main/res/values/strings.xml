@@ -40,6 +40,7 @@
     <string name="desc_perfil_usuario">Ver perfil de usuario</string>
     <string name="desc_crear_lista">Crear lista de reproducción</string>
     <string name="desc_volver">Volver</string>
+    <string name="seguir">Seguir</string>
 
     <!-- Perfil Usuario -->
     <string name="placeholder_user_name">Nombre Usuario</string>
