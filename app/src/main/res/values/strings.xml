@@ -40,6 +40,7 @@
     <string name="desc_perfil_usuario">Ver perfil de usuario</string>
     <string name="desc_crear_lista">Crear lista de reproducción</string>
     <string name="desc_volver">Volver</string>
+    <string name="seguir">Seguir</string>
 
     <!-- Perfil Usuario -->
     <string name="placeholder_user_name">Nombre Usuario</string>
@@ -72,5 +73,14 @@
     <string name="error_pais_requerido">Debes seleccionar un país</string>
     <string name="perfil_editado_ok">Perfil editado con éxito</string>
     <string name="error_servidor">Error en el servidor, inténtalo más tarde</string>
-    <string name="error_conexion">Error de conexión, revisa tu red</string>
+
+    <!-- Búsqueda -->
+    <string name="error_busqueda_vacia">Introduce un término de búsqueda</string>
+    <string name="no_resultados_cancion">No se encontraron canciones para “%1$s”</string>
+    <string name="no_resultados_album">No se encontraron álbumes para “%1$s”</string>
+    <string name="no_resultados_artista">No se encontraron artistas para “%1$s”</string>
+    <string name="resultados">Resultados</string>
+
+    <!-- Conexión / servidor -->
+    <string name="error_conexion">Error de conexión, comprueba tu red</string>
 </resources>

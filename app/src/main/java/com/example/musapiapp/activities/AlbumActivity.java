@@ -22,95 +22,76 @@ import java.util.List;
 public class AlbumActivity extends AppCompatActivity {
     public static final String EXTRA_ALBUM = "EXTRA_ALBUM";
 
-    private ImageButton btnVolver;
-    private ImageView ivPortada;
-    private TextView tvNombreAlbum, tvArtista, tvFecha, tvDuracion;
-    private Button btnSeguir, btnPublicar;
-    private LinearLayout llCanciones;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
 
-        btnVolver     = findViewById(R.id.btnVolver);
-        ivPortada     = findViewById(R.id.ivPortada);
-        tvNombreAlbum = findViewById(R.id.tvNombreAlbum);
-        tvArtista     = findViewById(R.id.tvArtista);
-        tvFecha       = findViewById(R.id.tvFecha);
-        tvDuracion    = findViewById(R.id.tvDuracion);
-        btnSeguir     = findViewById(R.id.btnSeguir);
-        btnPublicar   = findViewById(R.id.btnPublicar);
-        llCanciones   = findViewById(R.id.llCanciones);
+        ImageButton  btnVolver     = findViewById(R.id.btnVolver);
+        ImageView    ivPortada     = findViewById(R.id.ivPortada);
+        TextView     tvNombreAlbum = findViewById(R.id.tvNombreAlbum);
+        TextView     tvArtista     = findViewById(R.id.tvArtista);
+        TextView     tvFecha       = findViewById(R.id.tvFecha);
+        TextView     tvDuracion    = findViewById(R.id.tvDuracion);
+        Button       btnSeguir     = findViewById(R.id.btnSeguir);
+        LinearLayout llCanciones   = findViewById(R.id.llCanciones);
 
         btnVolver.setOnClickListener(v -> onBackPressed());
 
-        // Recuperar y mostrar álbum
-        BusquedaAlbumDTO album = (BusquedaAlbumDTO) getIntent()
-                .getSerializableExtra(EXTRA_ALBUM);
+        BusquedaAlbumDTO album = (BusquedaAlbumDTO)
+                getIntent().getSerializableExtra(EXTRA_ALBUM);
 
-        tvNombreAlbum.setText(album.getNombreAlbum());
-        tvArtista.setText("Artista: " + album.getNombreArtista());
-        tvFecha.setText("Fecha: " + album.getFechaPublicacion());
+        if (album != null) {
+            tvNombreAlbum.setText(album.getNombreAlbum());
+            tvArtista    .setText(album.getNombreArtista());
+            tvFecha      .setText(album.getFechaPublicacion());
+            Glide.with(this)
+                    .load("http://10.0.2.2:8080" + album.getUrlFoto())
+                    .into(ivPortada);
 
-        Glide.with(this)
-                .load("https://tu.api.baseurl.com" + album.getUrlFoto())
-                .into(ivPortada);
+            // Inflar canciones
+            List<BusquedaCancionDTO> songs = album.getCanciones();
+            if (songs != null) {
+                long totalSeg = 0;
+                llCanciones.removeAllViews();
+                for (BusquedaCancionDTO c : songs) {
+                    View item = LayoutInflater.from(this)
+                            .inflate(R.layout.item_contenido, llCanciones, false);
+                    TextView    tvN = item.findViewById(R.id.tvNombre);
+                    TextView    tvA = item.findViewById(R.id.tvAutor);
+                    ImageView   iv = item.findViewById(R.id.imgFoto);
+                    Button      bd = item.findViewById(R.id.btnVerDetalles);
+                    ImageButton bp = item.findViewById(R.id.btnReproducir);
 
-        // Mostrar/ocultar publicar si ya es público
-        boolean esPublico = true; // o tu lógica
-        btnPublicar.setVisibility(esPublico ? View.GONE : View.VISIBLE);
+                    tvN.setText(c.getNombre());
+                    tvA.setText(c.getNombreArtista());
+                    Glide.with(this)
+                            .load("http://10.0.2.2:8080" + c.getUrlFoto())
+                            .into(iv);
 
-        btnPublicar.setOnClickListener(v -> {
-            // TODO: publicar álbum
-        });
-        btnSeguir.setOnClickListener(v -> {
-            // TODO: seguir artista/álbum
-        });
+                    bd.setOnClickListener(v -> {
+                        Intent i = new Intent(this, CancionActivity.class);
+                        i.putExtra(CancionActivity.EXTRA_CANCION, c);
+                        startActivity(i);
+                    });
+                    // TODO: bp.setOnClickListener → reproducir fichero
 
-        // Listado de canciones
-        List<BusquedaCancionDTO> canciones = album.getCanciones();
-        if (canciones != null) {
-            llCanciones.removeAllViews();
-            for (BusquedaCancionDTO c : canciones) {
-                View item = LayoutInflater.from(this)
-                        .inflate(R.layout.item_contenido, llCanciones, false);
+                    llCanciones.addView(item);
 
-                ImageView ivFotoCan  = item.findViewById(R.id.imgFoto);
-                TextView tvNombreCan = item.findViewById(R.id.tvNombre);
-                TextView tvAutorCan  = item.findViewById(R.id.tvAutor);
-                Button btnVerDet      = item.findViewById(R.id.btnVerDetalles);
-                ImageButton btnPlayCan= item.findViewById(R.id.btnReproducir);
-                Button btnSaveCan     = item.findViewById(R.id.btnGuardar);
-
-                tvNombreCan.setText(c.getNombre());
-                tvAutorCan.setText(c.getNombreArtista());
-                Glide.with(this)
-                        .load("https://tu.api.baseurl.com" + c.getUrlFoto())
-                        .into(ivFotoCan);
-
-                btnSaveCan.setVisibility(View.GONE);
-                btnVerDet.setOnClickListener(v -> {
-                    Intent i = new Intent(this, CancionDetallesActivity.class);
-                    i.putExtra(CancionDetallesActivity.EXTRA_CANCION, c);
-                    startActivity(i);
-                });
-                btnPlayCan.setOnClickListener(v -> {
-                    // TODO: reproducir c.getUrlArchivo()
-                });
-
-                llCanciones.addView(item);
+                    // sumar duración
+                    String[] p = c.getDuracion().split(":");
+                    long seg = Integer.parseInt(p[0]) * 60 + Integer.parseInt(p[1]);
+                    totalSeg += seg;
+                }
+                long h = totalSeg / 3600,
+                        m = (totalSeg % 3600) / 60,
+                        s = totalSeg % 60;
+                tvDuracion.setText(String.format("Duración total %02d:%02d:%02d", h, m, s));
             }
 
-            // Calcular duración total
-            long totalSeg = canciones.stream()
-                    .mapToLong(c -> {
-                        String[] p = c.getDuracion().split(":");
-                        return Integer.parseInt(p[0]) * 60 + Integer.parseInt(p[1]);
-                    })
-                    .sum();
-            long h = totalSeg / 3600, m = (totalSeg % 3600) / 60, s = totalSeg % 60;
-            tvDuracion.setText(String.format("Duración: %02d:%02d:%02d", h, m, s));
+            btnSeguir.setOnClickListener(v -> {
+                // TODO: lógica de seguir artista
+            });
         }
     }
 }

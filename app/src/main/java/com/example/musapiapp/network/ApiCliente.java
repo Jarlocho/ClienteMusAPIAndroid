@@ -1,3 +1,4 @@
+// src/main/java/com/example/musapiapp/network/ApiCliente.java
 package com.example.musapiapp.network;
 
 import android.content.Context;
@@ -20,18 +21,22 @@ public class ApiCliente {
 
     public static Retrofit getClient(Context context) {
         if (retrofit == null) {
-            // 1) Interceptor de autenticación
+            // 1) Interceptor de autenticación SOLO para URLs que empiecen por BASE_URL
             Interceptor authInterceptor = new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
                     Request original = chain.request();
+                    String url = original.url().toString();
                     Request.Builder builder = original.newBuilder();
-                    String token = Preferencias.obtenerToken(context);
-                    if (token != null) {
-                        builder.header("Authorization", "Bearer " + token);
+
+                    // sólo si es petición a tu API (/api/...)
+                    if (url.startsWith(BASE_URL)) {
+                        String token = Preferencias.obtenerToken(context);
+                        if (token != null) {
+                            builder.header("Authorization", "Bearer " + token);
+                        }
                     }
-                    Request nuevaPeticion = builder.build();
-                    return chain.proceed(nuevaPeticion);
+                    return chain.proceed(builder.build());
                 }
             };
 
@@ -39,7 +44,7 @@ public class ApiCliente {
             HttpLoggingInterceptor logInterceptor = new HttpLoggingInterceptor();
             logInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
-            // 3) Construye el cliente OkHttp con ambos interceptores
+            // 3) Cliente OkHttp con ambos interceptores
             OkHttpClient client = new OkHttpClient.Builder()
                     .addInterceptor(authInterceptor)
                     .addInterceptor(logInterceptor)

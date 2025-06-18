@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Nombre de la canción -->
+        <TextView android:id="@+id/tvNombreCancion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nombre de la Canción"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Artista -->
+        <TextView android:id="@+id/tvArtistaCancion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Artista"
+            android:textSize="18sp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Duración -->
+        <TextView android:id="@+id/tvDuracionCancion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Duración: 03:45"
+            android:textSize="18sp"/>
+
+    </LinearLayout>
+</ScrollView>
