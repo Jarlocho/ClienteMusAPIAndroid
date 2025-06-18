@@ -19,4 +19,12 @@ public class UsuarioDTO implements Serializable {
     public boolean isEsArtista() { return esArtista; }
     public boolean isEsAdmin() { return esAdmin; }
     public String getToken() { return token; }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
 }

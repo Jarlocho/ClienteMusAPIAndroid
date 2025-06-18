@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -16,9 +17,7 @@
         android:theme="@style/Theme.MusAPIApp"
         tools:targetApi="31">
 
-        <activity
-            android:name=".activities.RegistroActivity"
-            android:exported="false" />
+        <!-- Punto de entrada -->
         <activity
             android:name=".activities.InicioSesionActivity"
             android:exported="true">
@@ -26,15 +25,107 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-        <activity android:name=".activities.MenuPrincipalActivity" />
-        <activity android:name=".activities.MenuAdminActivity"/>
-        <activity android:name=".activities.BusquedaActivity"/>
-        <activity android:name=".activities.PerfilArtistaActivity"/>
-        <activity android:name=".activities.PerfilUsuarioActivity"/>
-        <activity android:name=".activities.CrearAlbumActivity"/>
-        <activity android:name=".activities.CrearListaDeReproduccionActivity"/>
+
+        <!-- Registro de usuario -->
+        <activity
+            android:name=".activities.RegistroActivity"
+            android:exported="false" />
+
+        <!-- Menú principal -->
+        <activity
+            android:name=".activities.MenuPrincipalActivity"
+            android:parentActivityName=".activities.InicioSesionActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.InicioSesionActivity"/>
+        </activity>
+
+        <!-- Administración -->
+        <activity
+            android:name=".activities.MenuAdminActivity"
+            android:parentActivityName=".activities.MenuPrincipalActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MenuPrincipalActivity"/>
+        </activity>
+
+        <!-- Búsqueda -->
+        <activity
+            android:name=".activities.BusquedaActivity"
+            android:parentActivityName=".activities.MenuPrincipalActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MenuPrincipalActivity"/>
+        </activity>
+
+        <!-- Álbumes -->
+        <activity
+            android:name=".activities.AlbumActivity"
+            android:parentActivityName=".activities.MenuPrincipalActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MenuPrincipalActivity"/>
+        </activity>
+
+        <!-- Detalle de canción -->
+        <activity
+            android:name=".activities.CancionDetallesActivity"
+            android:parentActivityName=".activities.AlbumActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.AlbumActivity"/>
+        </activity>
+
+        <!-- Perfiles -->
+        <activity
+            android:name=".activities.PerfilUsuarioActivity"
+            android:parentActivityName=".activities.MenuPrincipalActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MenuPrincipalActivity"/>
+        </activity>
+        <activity
+            android:name=".activities.PerfilArtistaActivity"
+            android:parentActivityName=".activities.PerfilUsuarioActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.PerfilUsuarioActivity"/>
+        </activity>
+
+        <!-- Crear perfil de artista -->
+        <activity
+            android:name=".activities.CrearPerfilArtistaActivity"
+            android:parentActivityName=".activities.PerfilUsuarioActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.PerfilUsuarioActivity"/>
+        </activity>
+
+        <!-- Editar perfil de usuario -->
+        <activity
+            android:name=".activities.EditarPerfilActivity"
+            android:parentActivityName=".activities.PerfilUsuarioActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.PerfilUsuarioActivity"/>
+        </activity>
+
+        <!-- Crear álbum y listas -->
+        <activity
+            android:name=".activities.CrearAlbumActivity"
+            android:parentActivityName=".activities.MenuPrincipalActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MenuPrincipalActivity"/>
+        </activity>
+        <activity
+            android:name=".activities.CrearListaDeReproduccionActivity"
+            android:parentActivityName=".activities.MenuPrincipalActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MenuPrincipalActivity"/>
+        </activity>
 
     </application>
 

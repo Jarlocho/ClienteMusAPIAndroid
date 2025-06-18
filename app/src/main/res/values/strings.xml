@@ -30,16 +30,47 @@
     <string name="menu_opcion_crear_lista">Crear lista de reproducción</string>
     <string name="menu_opcion_cerrar_sesion">Cerrar sesión</string>
     <string name="menu_opcion_salir_app">Salir de la app</string>
-
     <string name="hint_buscar">Buscar…</string>
     <string name="label_albumes">Álbumes</string>
     <string name="label_listas">Listas</string>
     <string name="label_artistas">Artistas</string>
-    <!-- content descriptions -->
     <string name="desc_cerrar_sesion">Cerrar sesión</string>
     <string name="desc_buscar">Buscar contenido</string>
     <string name="desc_administracion">Abrir administración</string>
     <string name="desc_perfil_usuario">Ver perfil de usuario</string>
     <string name="desc_crear_lista">Crear lista de reproducción</string>
     <string name="desc_volver">Volver</string>
+
+    <!-- Perfil Usuario -->
+    <string name="placeholder_user_name">Nombre Usuario</string>
+    <string name="placeholder_user_handle">@nombre_de_usuario</string>
+    <string name="btn_crear_perfil_artista">Crear perfil de artista</string>
+    <string name="btn_ver_perfil_artista">Ver perfil de artista</string>
+    <string name="btn_ver_estadisticas">Estadísticas</string>
+    <string name="btn_editar_perfil">Editar perfil</string>
+    <string name="profile_listas_title">Listas de reproducción</string>
+
+    <!-- editar perfil -->
+    <string name="editar_perfil_titulo">Editar perfil</string>
+    <string name="subir_foto">Subir foto</string>
+    <string name="nombre_perfil_label">Nombre de perfil</string>
+    <string name="nombre_perfil_hint">Introduce el nombre público</string>
+    <string name="descripcion_label">Descripción</string>
+    <string name="descripcion_hint">Describe tu perfil</string>
+    <string name="pais_label">País</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="desc_foto_perfil">Foto de perfil del usuario</string>
+    <string name="desc_subir_foto">Subir nueva foto de perfil</string>
+    <string name="desc_nombre_perfil">Campo para editar nombre público</string>
+    <string name="desc_descripcion">Campo para editar descripción personal</string>
+    <string name="desc_pais">Selector de país de residencia</string>
+    <string name="desc_confirmar">Confirmar cambios en el perfil</string>
+
+    <!-- mensajes de error / validación -->
+    <string name="error_campos_invalidos">Por favor rellena todos los campos correctamente</string>
+    <string name="error_nombre_vacio">El nombre no puede quedar vacío</string>
+    <string name="error_pais_requerido">Debes seleccionar un país</string>
+    <string name="perfil_editado_ok">Perfil editado con éxito</string>
+    <string name="error_servidor">Error en el servidor, inténtalo más tarde</string>
+    <string name="error_conexion">Error de conexión, revisa tu red</string>
 </resources>

@@ -17,6 +17,7 @@ import com.example.musapiapp.dto.UsuarioDTO;
 import com.example.musapiapp.network.ApiCliente;
 import com.example.musapiapp.network.ServicioUsuario;
 import com.example.musapiapp.util.Preferencias;
+import com.google.gson.Gson;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,7 +34,7 @@ public class InicioSesionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_inicio_sesion);
 
         inputCorreoLogin    = findViewById(R.id.inputCorreoLogin);
         inputContrasenaLogin= findViewById(R.id.inputContrasenaLogin);
@@ -78,7 +79,13 @@ public class InicioSesionActivity extends AppCompatActivity {
                                 && response.body().getDatos() != null) {
                             UsuarioDTO u = response.body().getDatos();
 
+                            // 1) Guardar token
                             Preferencias.guardarToken(InicioSesionActivity.this, u.getToken());
+
+                            // 2) Guardar UsuarioDTO completo como JSON
+                            String jsonUsuario = new Gson().toJson(u);
+                            Preferencias.guardarUsuarioJson(InicioSesionActivity.this, jsonUsuario);
+
                             Toast.makeText(InicioSesionActivity.this,
                                     "Bienvenido " + u.getNombreUsuario(),
                                     Toast.LENGTH_LONG).show();

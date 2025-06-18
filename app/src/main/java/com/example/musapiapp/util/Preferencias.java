@@ -1,11 +1,13 @@
 package com.example.musapiapp.util;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 
 public class Preferencias {
 
-    private static final String NOMBRE_PREF = "MusAPI_Prefs";
-    private static final String CLAVE_TOKEN = "token";
+    private static final String NOMBRE_PREF     = "MusAPI_Prefs";
+    private static final String CLAVE_TOKEN     = "token";
+    private static final String CLAVE_USUARIO   = "usuario_json";
 
     public static void guardarToken(Context context, String token) {
         SharedPreferences prefs = context.getSharedPreferences(NOMBRE_PREF, Context.MODE_PRIVATE);
@@ -20,5 +22,24 @@ public class Preferencias {
     public static void borrarToken(Context context) {
         SharedPreferences prefs = context.getSharedPreferences(NOMBRE_PREF, Context.MODE_PRIVATE);
         prefs.edit().remove(CLAVE_TOKEN).apply();
+    }
+
+    // --------------------------------------------------------
+    // Métodos para guardar/recuperar el UsuarioDTO como JSON
+    // --------------------------------------------------------
+
+    public static void guardarUsuarioJson(Context context, String usuarioJson) {
+        SharedPreferences prefs = context.getSharedPreferences(NOMBRE_PREF, Context.MODE_PRIVATE);
+        prefs.edit().putString(CLAVE_USUARIO, usuarioJson).apply();
+    }
+
+    public static String recuperarUsuarioJson(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(NOMBRE_PREF, Context.MODE_PRIVATE);
+        return prefs.getString(CLAVE_USUARIO, null);
+    }
+
+    public static void borrarUsuario(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(NOMBRE_PREF, Context.MODE_PRIVATE);
+        prefs.edit().remove(CLAVE_USUARIO).apply();
     }
 }
