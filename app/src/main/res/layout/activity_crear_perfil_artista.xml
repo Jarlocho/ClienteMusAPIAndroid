@@ -1,6 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<ScrollView
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+tools:ignore="SpeakableTextPresent,TouchTargetSizeCheck,ImageContrastCheck,TextContrastCheck,MissingConstraints"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:padding="16dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Cabecera: volver + título -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp">
+
+        <ImageButton
+            android:id="@+id/btnVolver"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_media_previous"
+            app:tint="?android:attr/textColorPrimary"
+            android:contentDescription="@string/desc_volver" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/crear_perfil"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="16dp"
+            android:importantForAccessibility="no" />
+    </LinearLayout>
+
+    <!-- Foto de perfil (solo artistas) -->
+    <LinearLayout
+        android:id="@+id/llFoto"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:gravity="center_horizontal"
+        android:layout_marginBottom="16dp">
+
+        <ImageView
+            android:id="@+id/ivFoto"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_report_image"
+            android:contentDescription="@string/desc_foto_perfil" />
+
+        <Button
+            android:id="@+id/btnSubirFoto"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:minWidth="120dp"
+            android:text="@string/subir_foto"
+            android:contentDescription="@string/desc_subir_foto" />
+    </LinearLayout>
+
+    <!-- Descripción (solo artistas) -->
+    <TextView
+        android:id="@+id/labelDescripcion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/descripcion_label"
+        android:textStyle="bold"
+        android:textColor="?android:attr/textColorPrimary"
+        android:visibility="visible"
+        android:labelFor="@+id/etDescripcion" />
+
+    <EditText
+        android:id="@+id/etDescripcion"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:minHeight="48dp"
+        android:hint="@string/descripcion_hint"
+        android:inputType="textMultiLine|textCapSentences"
+        android:autofillHints="none"
+        android:importantForAutofill="no"
+        android:visibility="visible"
+        android:labelFor="@id/labelDescripcion"
+        android:textColor="?android:attr/textColorPrimary" />
+
+    <!-- Confirmar -->
+    <Button
+        android:id="@+id/btnConfirmar"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="24dp"
+        android:text="@string/confirmar"
+        android:contentDescription="@string/desc_confirmar" />
+
+</LinearLayout>
+</ScrollView>

@@ -27,4 +27,6 @@ public class UsuarioDTO implements Serializable {
     public void setPais(String pais) {
         this.pais = pais;
     }
+
+    public void setEsArtista(boolean esArtista) {this.esArtista = true; }
 }

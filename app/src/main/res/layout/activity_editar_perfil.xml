@@ -47,7 +47,7 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="gone"
+            android:visibility="visible"
             android:gravity="center_horizontal"
             android:layout_marginBottom="16dp">
 
@@ -98,7 +98,7 @@
             android:text="@string/descripcion_label"
             android:textStyle="bold"
             android:textColor="?android:attr/textColorPrimary"
-            android:visibility="gone"
+            android:visibility="visible"
             android:labelFor="@+id/etDescripcion" />
 
         <EditText
@@ -110,7 +110,7 @@
             android:inputType="textMultiLine|textCapSentences"
             android:autofillHints="none"
             android:importantForAutofill="no"
-            android:visibility="gone"
+            android:visibility="visible"
             android:labelFor="@id/labelDescripcion"
             android:textColor="?android:attr/textColorPrimary" />
 

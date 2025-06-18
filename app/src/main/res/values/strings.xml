@@ -73,4 +73,5 @@
     <string name="perfil_editado_ok">Perfil editado con éxito</string>
     <string name="error_servidor">Error en el servidor, inténtalo más tarde</string>
     <string name="error_conexion">Error de conexión, revisa tu red</string>
+    <string name="crear_perfil">Crear Perfil</string>
 </resources>

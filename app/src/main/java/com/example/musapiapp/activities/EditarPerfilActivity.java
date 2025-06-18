@@ -1,11 +1,16 @@
 package com.example.musapiapp.activities;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,6 +25,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.musapiapp.R;
+import com.example.musapiapp.dto.BusquedaArtistaDTO;
+import com.example.musapiapp.dto.BusquedaCancionDTO;
 import com.example.musapiapp.dto.EdicionPerfilDTO;
 import com.example.musapiapp.dto.UsuarioDTO;
 import com.example.musapiapp.model.Pais;
@@ -28,8 +35,16 @@ import com.example.musapiapp.network.ServicioUsuario;
 import com.example.musapiapp.util.Preferencias;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.Collator;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +53,7 @@ import java.util.Locale;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -82,8 +98,85 @@ public class EditarPerfilActivity extends AppCompatActivity {
             etNombre.setText(u.getNombre());
             edicion.setNombre(u.getNombre());
             esArtista = u.isEsArtista();
-            labelDescripcion.setVisibility(esArtista ? View.VISIBLE : View.GONE);
-            etDescripcion   .setVisibility(esArtista ? View.VISIBLE : View.GONE);
+            if (!esArtista) {
+                labelDescripcion.setVisibility(View.GONE);
+                etDescripcion.setVisibility(View.GONE);
+                ivFoto.setVisibility(View.GONE);
+                btnSubirFoto.setVisibility(View.GONE);
+            } else {
+                labelDescripcion.setVisibility(View.VISIBLE);
+                etDescripcion.setVisibility(View.VISIBLE);
+                ivFoto.setVisibility(View.VISIBLE);
+                btnSubirFoto.setVisibility(View.VISIBLE);
+
+                // Obtener token guardado
+                String token = Preferencias.obtenerToken(this);
+                String bearer = token != null ? "Bearer " + token : "";
+
+                ServicioUsuario srv = ApiCliente.getClient(this)
+                        .create(ServicioUsuario.class);
+
+                srv.obtenerArtistaPorId(
+                        bearer,
+                        idUsuario  // <- ID del artista a buscar
+                ).enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful()) {
+                            try {
+                                // Parsear respuesta manualmente
+                                String responseBody = response.body().string();
+                                JSONObject jsonObject = new JSONObject(responseBody);
+                                JSONObject datos = jsonObject.getJSONObject("datos");
+
+                                // Mapear a BusquedaArtistaDTO
+                                BusquedaArtistaDTO artista = new BusquedaArtistaDTO();
+                                artista.setIdArtista(datos.getInt("idArtista"));
+                                artista.setNombre(datos.getString("nombre"));
+                                artista.setNombreUsuario(datos.getString("nombreUsuario"));
+                                artista.setDescripcion(datos.getString("descripcion"));
+                                artista.setUrlFoto(datos.getString("urlFoto"));
+
+                                // Mostrar datos en UI
+                                runOnUiThread(() -> {
+                                    cargarImagen(artista.getUrlFoto(), ivFoto);
+
+                                    etDescripcion.setText(artista.getDescripcion());
+                                });
+
+                            }catch (Exception e) {
+                                runOnUiThread(() ->
+                                        Toast.makeText(EditarPerfilActivity.this,
+                                                "Error al parsear respuesta",
+                                                Toast.LENGTH_SHORT).show()
+                                );
+                                Log.e("API", "Parse error: " + e.getMessage());
+                            }
+                        } else {
+                            try {
+                                String errorBody = response.errorBody().string();
+                                runOnUiThread(() ->
+                                        Toast.makeText(EditarPerfilActivity.this,
+                                                "Error: " + response.code() + " - " + errorBody,
+                                                Toast.LENGTH_SHORT).show()
+                                );
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        runOnUiThread(() ->
+                                Toast.makeText(EditarPerfilActivity.this,
+                                        "Error de conexión: " + t.getMessage(),
+                                        Toast.LENGTH_SHORT).show()
+                        );
+                    }
+                });
+
+            }
         }
 
         // lista completa de países (igual que en registro), ordenada
@@ -321,6 +414,47 @@ public class EditarPerfilActivity extends AppCompatActivity {
         cursor.close();
         return path;
     }
+
+    @SuppressLint("StaticFieldLeak")
+    private void cargarImagen(String urlImagen, ImageView imageView) {
+        if (urlImagen == null || urlImagen.isEmpty()) {
+            return;
+        }
+
+        new AsyncTask<Void, Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(Void... voids) {
+                try {
+                    ApiCliente apiCliente = new ApiCliente();
+                    URL url = new URL( apiCliente.getUrlArchivos()+ urlImagen);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    String token = Preferencias.obtenerToken(EditarPerfilActivity.this);
+                    String bearer = token != null ? "Bearer " + token : "";
+                    connection.setRequestProperty("Authorization", bearer);
+                    connection.setDoInput(true);
+                    connection.connect();
+
+                    InputStream input = connection.getInputStream();
+                    Bitmap bitmap = BitmapFactory.decodeStream(input);
+                    input.close();
+
+                    return bitmap;
+                } catch (Exception e) {
+                    //ivFoto.setImageResource(R.drawable.musapi_logo);
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                if (bitmap != null && imageView != null) {
+                    imageView.setImageBitmap(bitmap);
+                }
+            }
+        }.execute();
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
