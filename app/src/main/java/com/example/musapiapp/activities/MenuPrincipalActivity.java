@@ -18,6 +18,7 @@ import com.example.musapiapp.R;
 import com.example.musapiapp.dto.BusquedaAlbumDTO;
 import com.example.musapiapp.dto.BusquedaArtistaDTO;
 import com.example.musapiapp.dto.ListaReproduccionDTO;
+import com.example.musapiapp.network.ApiCliente;
 
 import java.util.Arrays;
 import java.util.List;
@@ -93,7 +94,7 @@ public class MenuPrincipalActivity extends AppCompatActivity {
             tvAutor .setText(alb.getNombreArtista());
             btnSave .setVisibility(View.GONE);
             Glide.with(this)
-                    .load("http://10.0.2.2:8080" + alb.getUrlFoto())
+                    .load(ApiCliente.getUrlArchivos() + alb.getUrlFoto())
                     .into(ivFoto);
 
             btnDet.setOnClickListener(v -> {
@@ -140,8 +141,9 @@ public class MenuPrincipalActivity extends AppCompatActivity {
             bs  .setText(R.string.seguir);
             bp  .setVisibility(View.GONE);
             Glide.with(this)
-                    .load("http://10.0.2.2:8080" + art.getUrlFoto())
+                    .load(ApiCliente.getUrlArchivos() + art.getUrlFoto())
                     .into(iv);
+
 
             bs.setOnClickListener(v -> {
                 // TODO: lógica de seguir
