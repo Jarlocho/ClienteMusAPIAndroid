@@ -19,6 +19,7 @@ import com.example.musapiapp.dto.BusquedaAlbumDTO;
 import com.example.musapiapp.dto.BusquedaArtistaDTO;
 import com.example.musapiapp.dto.ListaReproduccionDTO;
 import com.example.musapiapp.network.ApiCliente;
+import com.example.musapiapp.util.Preferencias;
 
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +51,10 @@ public class MenuPrincipalActivity extends AppCompatActivity {
         llArtistas       = findViewById(R.id.ll_artistas);
 
         btnCerrarSesion.setOnClickListener(v -> {
+            // 1) Limpia el token y el usuario
+            Preferencias.borrarToken(this);
+            Preferencias.borrarUsuario(this);
+            // 2) Vuelve al login
             startActivity(new Intent(this, InicioSesionActivity.class));
             finish();
         });

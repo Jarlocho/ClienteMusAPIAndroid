@@ -127,7 +127,7 @@ public class CrearPerfilArtistaActivity extends AppCompatActivity {
                 Preferencias.obtenerToken(this);
 
         ServicioUsuario srv = ApiCliente.getClient(this).create(ServicioUsuario.class);
-        srv.crearPerfilArtista(bearer, idUsuario, rbDesc, parteFoto)
+        srv.crearPerfilArtista(idUsuario, rbDesc, parteFoto)
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call,

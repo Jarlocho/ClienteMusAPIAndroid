@@ -34,7 +34,6 @@ public interface ServicioUsuario {
     @Multipart
     @PUT("usuarios/{id}/editar-perfil")
     Call<Void> editarPerfil(
-            @Header("Authorization") String bearerToken,
             @Path("id") int idUsuario,
             @Part("nombre") RequestBody nombre,
             @Part("nombreUsuario") RequestBody nombreUsuario,
@@ -46,7 +45,6 @@ public interface ServicioUsuario {
     @Multipart
     @POST("usuarios/crear-perfilArtista")
     Call<Void> crearPerfilArtista(
-            @Header("Authorization") String bearerToken,
             @Part("idUsuario") int idUsuario,
             @Part("descripcion") RequestBody descripcion,
             @Part MultipartBody.Part foto    // puede ser null si no hay foto
@@ -58,7 +56,6 @@ public interface ServicioUsuario {
      */
     @GET("usuarios/artista/{id}")
     Call<RespuestaCliente<BusquedaArtistaDTO>> obtenerPerfilArtista(
-            @Header("Authorization") String bearerToken,
             @Path("id") int idArtista
     );
 
