@@ -50,6 +50,13 @@
     <string name="btn_ver_estadisticas">Estadísticas</string>
     <string name="btn_editar_perfil">Editar perfil</string>
     <string name="profile_listas_title">Listas de reproducción</string>
+    <string name="desc_volver_artista">Volver</string>
+    <string name="default_nombre_artista">Nombre Artista</string>
+    <string name="default_handle_artista">@handle_artista</string>
+    <string name="default_desc_artista">Descripción del artista...</string>
+    <string name="perfil_artista_titulo">Perfil artista</string>
+    <string name="nombre_label">Nombre</string>
+    <string name="usuario_label">Usuario</string>
 
     <!-- editar perfil -->
     <string name="editar_perfil_titulo">Editar perfil</string>
@@ -84,4 +91,8 @@
 
     <!-- Conexión / servidor -->
     <string name="error_conexion">Error de conexión, comprueba tu red</string>
+
+    <!-- Descripción para el botón de Chat -->
+    <string name="desc_chat">Abrir chat con el artista</string>
+
 </resources>

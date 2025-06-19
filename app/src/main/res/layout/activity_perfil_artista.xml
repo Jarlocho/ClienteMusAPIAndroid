@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/activity_perfil_artista.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -9,44 +10,114 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- Cabecera: volver + título + chat -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
+
+            <ImageButton
+                android:id="@+id/btn_volver_artista"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_media_previous"
+                app:tint="?android:attr/textColorPrimary"
+                android:contentDescription="@string/desc_volver" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/perfil_artista_titulo"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:textColor="?android:attr/textColorPrimary" />
+
+            <!-- Botón Chat -->
+            <ImageButton
+                android:id="@+id/btn_chat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_margin="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_chat_bubble_outline"
+                android:contentDescription="@string/desc_chat"
+                app:tint="?attr/colorOnBackground" />
+        </LinearLayout>
+
         <!-- Foto del artista -->
-        <ImageView
-            android:id="@+id/ivFotoArtista"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_launcher_background"
-            android:contentDescription="@string/desc_perfil_usuario"
-            android:scaleType="centerCrop"
-            android:layout_marginBottom="16dp"/>
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:id="@+id/ivFotoArtista"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/ic_launcher_background"
+                android:contentDescription="@string/desc_perfil_usuario" />
+        </LinearLayout>
 
         <!-- Nombre -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/nombre_label"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary" />
+
         <TextView
             android:id="@+id/tvNombreArtista"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nombre Artista"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:text="@string/default_nombre_artista"
+            android:textSize="18sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="16dp"/>
 
-        <!-- Handle / usuario -->
+        <!-- Usuario -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/usuario_label"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary" />
+
         <TextView
             android:id="@+id/tvHandleArtista"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@handle_artista"
+            android:text="@string/default_handle_artista"
             android:textSize="16sp"
-            android:textColor="#666"
-            android:layout_marginBottom="12dp"/>
+            android:textColor="?android:attr/textColorSecondary"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="16dp"/>
 
         <!-- Descripción -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/descripcion_label"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary" />
+
         <TextView
             android:id="@+id/tvDescripcionArtista"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Descripción del artista..."
-            android:textSize="16sp"/>
-
+            android:text="@string/default_desc_artista"
+            android:textSize="16sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="24dp"/>
     </LinearLayout>
 </ScrollView>

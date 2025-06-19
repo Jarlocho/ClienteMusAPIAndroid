@@ -1,3 +1,4 @@
+// src/main/java/com/example/musapiapp/activities/EditarPerfilActivity.java
 package com.example.musapiapp.activities;
 
 import android.annotation.SuppressLint;
@@ -26,8 +27,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.musapiapp.R;
 import com.example.musapiapp.dto.BusquedaArtistaDTO;
-import com.example.musapiapp.dto.BusquedaCancionDTO;
 import com.example.musapiapp.dto.EdicionPerfilDTO;
+import com.example.musapiapp.dto.RespuestaCliente;
 import com.example.musapiapp.dto.UsuarioDTO;
 import com.example.musapiapp.model.Pais;
 import com.example.musapiapp.network.ApiCliente;
@@ -36,16 +37,11 @@ import com.example.musapiapp.util.Constantes;
 import com.example.musapiapp.util.Preferencias;
 import com.google.gson.Gson;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.Collator;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +50,6 @@ import java.util.Locale;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -88,10 +83,9 @@ public class EditarPerfilActivity extends AppCompatActivity {
         spinnerPais      = findViewById(R.id.spinnerPais);
         btnConfirmar     = findViewById(R.id.btnConfirmar);
 
-        // vuelve atrás
         btnVolver.setOnClickListener(v -> finish());
 
-        // cargo usuario de SharedPreferences
+        // Cargo datos del usuario de prefs
         String jsonUser = Preferencias.recuperarUsuarioJson(this);
         if (jsonUser != null) {
             UsuarioDTO u = new Gson().fromJson(jsonUser, UsuarioDTO.class);
@@ -105,82 +99,72 @@ public class EditarPerfilActivity extends AppCompatActivity {
                 ivFoto.setVisibility(View.GONE);
                 btnSubirFoto.setVisibility(View.GONE);
             } else {
-                labelDescripcion.setVisibility(View.VISIBLE);
-                etDescripcion.setVisibility(View.VISIBLE);
-                ivFoto.setVisibility(View.VISIBLE);
-                btnSubirFoto.setVisibility(View.VISIBLE);
-
-                // Obtener token guardado
-                String token = Preferencias.obtenerToken(this);
-                String bearer = token != null ? "Bearer " + token : "";
-
-                ServicioUsuario srv = ApiCliente.getClient(this)
-                        .create(ServicioUsuario.class);
-
-                srv.obtenerArtistaPorId(
-                        bearer,
-                        idUsuario  // <- ID del artista a buscar
-                ).enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if (response.isSuccessful()) {
-                            try {
-                                // Parsear respuesta manualmente
-                                String responseBody = response.body().string();
-                                JSONObject jsonObject = new JSONObject(responseBody);
-                                JSONObject datos = jsonObject.getJSONObject("datos");
-
-                                // Mapear a BusquedaArtistaDTO
-                                BusquedaArtistaDTO artista = new BusquedaArtistaDTO();
-                                artista.setIdArtista(datos.getInt("idArtista"));
-                                artista.setNombre(datos.getString("nombre"));
-                                artista.setNombreUsuario(datos.getString("nombreUsuario"));
-                                artista.setDescripcion(datos.getString("descripcion"));
-                                artista.setUrlFoto(datos.getString("urlFoto"));
-
-                                // Mostrar datos en UI
-                                runOnUiThread(() -> {
-                                    cargarImagen(artista.getUrlFoto(), ivFoto);
-
-                                    etDescripcion.setText(artista.getDescripcion());
-                                });
-
-                            }catch (Exception e) {
-                                runOnUiThread(() ->
-                                        Toast.makeText(EditarPerfilActivity.this,
-                                                "Error al parsear respuesta",
-                                                Toast.LENGTH_SHORT).show()
-                                );
-                                Log.e("API", "Parse error: " + e.getMessage());
-                            }
-                        } else {
-                            try {
-                                String errorBody = response.errorBody().string();
-                                runOnUiThread(() ->
-                                        Toast.makeText(EditarPerfilActivity.this,
-                                                "Error: " + response.code() + " - " + errorBody,
-                                                Toast.LENGTH_SHORT).show()
-                                );
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        runOnUiThread(() ->
-                                Toast.makeText(EditarPerfilActivity.this,
-                                        "Error de conexión: " + t.getMessage(),
-                                        Toast.LENGTH_SHORT).show()
-                        );
-                    }
-                });
-
+                // Sólo para artista: bajamos su perfil completo vía API
+                cargarDatosArtista();
             }
         }
 
-        // lista completa de países (igual que en registro), ordenada
+        // Spinner de países (igual que en registro)…
+        setupSpinnerPaises();
+
+        // Elegir foto de galería
+        btnSubirFoto.setOnClickListener(v -> {
+            Intent pick = new Intent(Intent.ACTION_PICK,
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            pick.setType("image/*");
+            startActivityForResult(pick, PICK_IMAGE);
+        });
+
+        // Confirmar edición
+        btnConfirmar.setOnClickListener(v -> {
+            if (validarCampos()) {
+                enviarEdicionAlServidor();
+            } else {
+                Toast.makeText(this,
+                        R.string.error_campos_invalidos,
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void cargarDatosArtista() {
+        String token  = Preferencias.obtenerToken(this);
+        String bearer = token != null ? "Bearer " + token : "";
+
+        ServicioUsuario srv = ApiCliente.getClient(this)
+                .create(ServicioUsuario.class);
+
+        srv.obtenerPerfilArtista(bearer, idUsuario)
+                .enqueue(new Callback<RespuestaCliente<BusquedaArtistaDTO>>() {
+                    @Override
+                    public void onResponse(Call<RespuestaCliente<BusquedaArtistaDTO>> call,
+                                           Response<RespuestaCliente<BusquedaArtistaDTO>> resp) {
+                        if (resp.isSuccessful()
+                                && resp.body() != null
+                                && resp.body().getDatos() != null) {
+                            BusquedaArtistaDTO artista = resp.body().getDatos();
+                            // mostramos descripción e imagen
+                            etDescripcion.setText(artista.getDescripcion());
+                            cargarImagen(artista.getUrlFoto(), ivFoto);
+                            edicion.setDescripcion(artista.getDescripcion());
+                            edicion.setFotoPath(null); // se mantiene la original hasta cambiar
+                        } else {
+                            Toast.makeText(EditarPerfilActivity.this,
+                                    "Error al cargar perfil artista",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<RespuestaCliente<BusquedaArtistaDTO>> call,
+                                          Throwable t) {
+                        Toast.makeText(EditarPerfilActivity.this,
+                                "Error de red: " + t.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void setupSpinnerPaises() {
         List<Pais> paises = Arrays.asList(
                 new Pais("AF", "Afganistán"),
                 new Pais("AL", "Albania"),
@@ -381,34 +365,51 @@ public class EditarPerfilActivity extends AppCompatActivity {
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPais.setAdapter(adapter);
-
-        // elegir foto de galería
-        btnSubirFoto.setOnClickListener(v -> {
-            Intent pick = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-            pick.setType("image/*");
-            startActivityForResult(pick, PICK_IMAGE);
-        });
-
-        // confirmar edición
-        btnConfirmar.setOnClickListener(v -> {
-            if (validarCampos()) {
-                enviarEdicionAlServidor();
-            } else {
-                Toast.makeText(this,
-                        R.string.error_campos_invalidos,
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
-    // resuelvo URI -> ruta real en disco
+    @SuppressLint("StaticFieldLeak")
+    private void cargarImagen(String urlImagen, ImageView imageView) {
+        if (urlImagen==null || urlImagen.isEmpty()) return;
+        new AsyncTask<Void,Void,Bitmap>() {
+            @Override protected Bitmap doInBackground(Void... voids) {
+                try {
+                    URL url = new URL(Constantes.URL_BASE + urlImagen);
+                    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                    String token = Preferencias.obtenerToken(EditarPerfilActivity.this);
+                    if (token!=null) conn.setRequestProperty("Authorization","Bearer "+token);
+                    conn.setDoInput(true);
+                    conn.connect();
+                    InputStream in = conn.getInputStream();
+                    Bitmap bmp = BitmapFactory.decodeStream(in);
+                    in.close();
+                    return bmp;
+                } catch (Exception e) {
+                    Log.e("EditarPerfil","cargarImagen",e);
+                    return null;
+                }
+            }
+            @Override protected void onPostExecute(Bitmap bmp) {
+                if (bmp!=null) imageView.setImageBitmap(bmp);
+            }
+        }.execute();
+    }
+
+    @Override
+    protected void onActivityResult(int req, int res, @Nullable Intent data) {
+        super.onActivityResult(req,res,data);
+        if (req==PICK_IMAGE && res==Activity.RESULT_OK && data!=null && data.getData()!=null) {
+            Uri uri = data.getData();
+            ivFoto.setImageURI(uri);
+            edicion.setFotoPath(realPathFromUri(uri));
+        }
+    }
+
     private String realPathFromUri(Uri uri) {
         Cursor cursor = getContentResolver().query(
-                uri,
-                new String[]{MediaStore.Images.Media.DATA},
+                uri, new String[]{MediaStore.Images.Media.DATA},
                 null,null,null
         );
-        if (cursor == null) return null;
+        if (cursor==null) return null;
         cursor.moveToFirst();
         int idx = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         String path = cursor.getString(idx);
@@ -416,76 +417,22 @@ public class EditarPerfilActivity extends AppCompatActivity {
         return path;
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private void cargarImagen(String urlImagen, ImageView imageView) {
-        if (urlImagen == null || urlImagen.isEmpty()) {
-            return;
-        }
-
-        new AsyncTask<Void, Void, Bitmap>() {
-            @Override
-            protected Bitmap doInBackground(Void... voids) {
-                try {
-                    URL url = new URL(  Constantes.URL_BASE +urlImagen);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    String token = Preferencias.obtenerToken(EditarPerfilActivity.this);
-                    String bearer = token != null ? "Bearer " + token : "";
-                    connection.setRequestProperty("Authorization", bearer);
-                    connection.setDoInput(true);
-                    connection.connect();
-
-                    InputStream input = connection.getInputStream();
-                    Bitmap bitmap = BitmapFactory.decodeStream(input);
-                    input.close();
-
-                    return bitmap;
-                } catch (Exception e) {
-                    //ivFoto.setImageResource(R.drawable.musapi_logo);
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(Bitmap bitmap) {
-                if (bitmap != null && imageView != null) {
-                    imageView.setImageBitmap(bitmap);
-                }
-            }
-        }.execute();
-    }
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode,resultCode,data);
-        if (requestCode==PICK_IMAGE && resultCode==Activity.RESULT_OK && data!=null && data.getData()!=null) {
-            Uri uri = data.getData();
-            ivFoto.setImageURI(uri);
-            edicion.setFotoPath(realPathFromUri(uri));
-        }
-    }
-
     private boolean validarCampos() {
         boolean ok = true;
         String nombre = etNombre.getText().toString().trim();
         if (nombre.isEmpty()) {
-            etNombre.setError(getString(R.string.error_nombre_vacio));
+            etNombre.setError("El nombre no puede estar vacío");
             ok = false;
         } else {
             edicion.setNombre(nombre);
         }
-
         Pais sel = (Pais)spinnerPais.getSelectedItem();
         if (sel==null) {
-            Toast.makeText(this,
-                    R.string.error_pais_requerido,
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Debes seleccionar un país",Toast.LENGTH_SHORT).show();
             ok = false;
         } else {
             edicion.setPais(sel.getCodigo());
         }
-
         if (esArtista) {
             edicion.setDescripcion(etDescripcion.getText().toString().trim());
         }
@@ -493,13 +440,14 @@ public class EditarPerfilActivity extends AppCompatActivity {
     }
 
     private void enviarEdicionAlServidor() {
-        // construyo los RequestBody para texto
         RequestBody rbNombre = RequestBody.create(
                 MediaType.parse("text/plain"), edicion.getNombre()
         );
         RequestBody rbNombreUsuario = RequestBody.create(
-                MediaType.parse("text/plain"), /* si no cambiaslo o mismo preferencia */
-                new Gson().fromJson(Preferencias.recuperarUsuarioJson(this), UsuarioDTO.class).getNombreUsuario()
+                MediaType.parse("text/plain"),
+                new Gson().fromJson(
+                        Preferencias.recuperarUsuarioJson(this), UsuarioDTO.class
+                ).getNombreUsuario()
         );
         RequestBody rbPais = RequestBody.create(
                 MediaType.parse("text/plain"), edicion.getPais()
@@ -508,10 +456,8 @@ public class EditarPerfilActivity extends AppCompatActivity {
                 MediaType.parse("text/plain"),
                 edicion.getDescripcion() == null ? "" : edicion.getDescripcion()
         );
-
-        // preparo foto multipart
         MultipartBody.Part parteFoto = null;
-        if (edicion.getFotoPath() != null) {
+        if (edicion.getFotoPath()!=null) {
             File fotoFile = new File(edicion.getFotoPath());
             RequestBody rbFoto = RequestBody.create(
                     MediaType.parse("image/*"), fotoFile
@@ -520,58 +466,34 @@ public class EditarPerfilActivity extends AppCompatActivity {
                     "foto", fotoFile.getName(), rbFoto
             );
         }
-
-        // obtengo token guardado
         String token = Preferencias.obtenerToken(this);
-        String bearer = token != null ? "Bearer " + token : "";
+        String bearer = token!=null ? "Bearer "+token : "";
 
         ServicioUsuario srv = ApiCliente.getClient(this)
                 .create(ServicioUsuario.class);
 
         srv.editarPerfil(
-                bearer,
-                idUsuario,
-                rbNombre,
-                rbNombreUsuario,
-                rbPais,
-                rbDesc,
+                bearer, idUsuario,
+                rbNombre, rbNombreUsuario, rbPais, rbDesc,
                 parteFoto
         ).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> resp) {
                 if (resp.isSuccessful()) {
-                    // 1) Actualizar SharedPreferences con los nuevos datos
-                    UsuarioDTO u = new Gson().fromJson(
-                            Preferencias.recuperarUsuarioJson(EditarPerfilActivity.this),
-                            UsuarioDTO.class
-                    );
-                    u.setNombre(edicion.getNombre());
-                    u.setPais(edicion.getPais());
-                    Preferencias.guardarUsuarioJson(
-                            EditarPerfilActivity.this,
-                            new Gson().toJson(u)
-                    );
-
-                    // 2) Mostrar feedback
-                    Toast.makeText(EditarPerfilActivity.this,
-                            R.string.perfil_editado_ok,
-                            Toast.LENGTH_SHORT).show();
-
-                    // 3) Avisar a la actividad que lanzó esta (PerfilUsuarioActivity)
+                    // actualizar prefs…
                     setResult(RESULT_OK);
-
-                    // 4) Cerrar tras breve delay para que se vea el Toast
-                    btnConfirmar.postDelayed(() -> finish(), 500);
+                    Toast.makeText(EditarPerfilActivity.this,
+                            "Perfil editado ok", Toast.LENGTH_SHORT).show();
+                    finish();
                 } else {
                     Toast.makeText(EditarPerfilActivity.this,
-                            R.string.error_servidor,
+                            "Error en servidor: "+resp.code(),
                             Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override public void onFailure(Call<Void> call, Throwable t) {
                 Toast.makeText(EditarPerfilActivity.this,
-                        R.string.error_conexion,
+                        "Error de red: "+t.getMessage(),
                         Toast.LENGTH_SHORT).show();
             }
         });

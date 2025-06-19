@@ -237,7 +237,7 @@ public class BusquedaActivity extends AppCompatActivity {
 
                     btnDet.setOnClickListener(v -> {
                         Intent i = new Intent(BusquedaActivity.this, PerfilArtistaActivity.class);
-                        i.putExtra(PerfilArtistaActivity.EXTRA_ARTISTA, dto);
+                        i.putExtra(PerfilArtistaActivity.EXTRA_ID_ARTISTA, dto.getIdArtista());
                         startActivity(i);
                     });
 

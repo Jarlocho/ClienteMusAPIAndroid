@@ -128,6 +128,15 @@
                 android:value=".activities.MenuPrincipalActivity"/>
         </activity>
 
+        <!-- Chat del artista -->
+        <activity
+            android:name=".activities.ChatActivity"
+            android:parentActivityName=".activities.PerfilArtistaActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.PerfilArtistaActivity"/>
+        </activity>
+
     </application>
 
 </manifest>
