@@ -110,4 +110,10 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        recargarUsuario();
+    }
+
 }
