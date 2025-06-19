@@ -1,5 +1,6 @@
 package com.example.musapiapp.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -14,9 +15,11 @@ import com.bumptech.glide.load.model.LazyHeaders;
 import com.example.musapiapp.R;
 import com.example.musapiapp.dto.BusquedaArtistaDTO;
 import com.example.musapiapp.dto.RespuestaCliente;
+import com.example.musapiapp.dto.UsuarioDTO;
 import com.example.musapiapp.network.ApiCliente;
 import com.example.musapiapp.network.ServicioUsuario;
 import com.example.musapiapp.util.Preferencias;
+import com.google.gson.Gson;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -25,7 +28,7 @@ import retrofit2.Response;
 public class PerfilArtistaActivity extends AppCompatActivity {
     public static final String EXTRA_ID_ARTISTA = "EXTRA_ID_ARTISTA";
 
-    private ImageButton btnVolver;
+    private ImageButton btnVolver,btnChat;
     private ImageView   ivFotoArtista;
     private TextView    tvNombreArtista,
             tvHandleArtista,
@@ -39,12 +42,29 @@ public class PerfilArtistaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_perfil_artista);
 
         btnVolver            = findViewById(R.id.btn_volver_artista);
+        btnChat              = findViewById(R.id.btn_chat);
         ivFotoArtista        = findViewById(R.id.ivFotoArtista);
         tvNombreArtista      = findViewById(R.id.tvNombreArtista);
         tvHandleArtista      = findViewById(R.id.tvHandleArtista);
         tvDescripcionArtista = findViewById(R.id.tvDescripcionArtista);
 
         btnVolver.setOnClickListener(v -> finish());
+
+        // Botón Chat
+        btnChat.setOnClickListener(v -> {
+            // Lanzamos la pantalla de chat, pasando el ID y el nombre de usuario actual
+            Intent i = new Intent(this, ChatActivity.class);
+            i.putExtra(ChatActivity.EXTRA_ID_ARTISTA, idArtista);
+
+            String usuarioJson = Preferencias.recuperarUsuarioJson(this);
+            String handle = "";
+            if (usuarioJson != null) {
+                UsuarioDTO u = new Gson().fromJson(usuarioJson, UsuarioDTO.class);
+                handle = u.getNombreUsuario();
+            }
+            i.putExtra(ChatActivity.EXTRA_NOMBRE_USUARIO, handle);
+            startActivity(i);
+        });
 
         // obtenemos el ID
         if (getIntent().hasExtra(EXTRA_ID_ARTISTA)) {

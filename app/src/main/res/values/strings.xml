@@ -91,4 +91,8 @@
 
     <!-- Conexión / servidor -->
     <string name="error_conexion">Error de conexión, comprueba tu red</string>
+
+    <!-- Descripción para el botón de Chat -->
+    <string name="desc_chat">Abrir chat con el artista</string>
+
 </resources>

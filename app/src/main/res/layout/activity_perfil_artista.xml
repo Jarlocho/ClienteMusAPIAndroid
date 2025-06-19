@@ -1,7 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/activity_perfil_artista.xml -->
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -11,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Cabecera: volver + título (estilo de la segunda ventana) -->
+        <!-- Cabecera: volver + título + chat -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
@@ -37,9 +36,20 @@
                 android:textStyle="bold"
                 android:layout_marginStart="16dp"
                 android:textColor="?android:attr/textColorPrimary" />
+
+            <!-- Botón Chat -->
+            <ImageButton
+                android:id="@+id/btn_chat"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_margin="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_chat_bubble_outline"
+                android:contentDescription="@string/desc_chat"
+                app:tint="?attr/colorOnBackground" />
         </LinearLayout>
 
-        <!-- Foto del artista (estilo ampliado) -->
+        <!-- Foto del artista -->
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -56,7 +66,7 @@
                 android:contentDescription="@string/desc_perfil_usuario" />
         </LinearLayout>
 
-        <!-- Nombre con etiqueta -->
+        <!-- Nombre -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,7 +84,7 @@
             android:layout_marginTop="4dp"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Handle/usuario con etiqueta -->
+        <!-- Usuario -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -92,7 +102,7 @@
             android:layout_marginTop="4dp"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Descripción con etiqueta -->
+        <!-- Descripción -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -109,7 +119,5 @@
             android:textColor="?android:attr/textColorPrimary"
             android:layout_marginTop="4dp"
             android:layout_marginBottom="24dp"/>
-
-
     </LinearLayout>
 </ScrollView>
