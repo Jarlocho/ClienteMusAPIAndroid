@@ -23,7 +23,7 @@ import com.example.musapiapp.network.ApiCliente;
 import java.util.Arrays;
 import java.util.List;
 
-public class MenuPrincipalActivity extends AppCompatActivity {
+public class MenuPrincipalActivity extends BaseActivity {
     public static final String EXTRA_QUERY = "extra_query";
 
     private ImageButton btnCerrarSesion,

@@ -25,7 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PerfilArtistaActivity extends AppCompatActivity {
+public class PerfilArtistaActivity extends BaseActivity {
     public static final String EXTRA_ID_ARTISTA = "EXTRA_ID_ARTISTA";
 
     private ImageButton btnVolver,btnChat;

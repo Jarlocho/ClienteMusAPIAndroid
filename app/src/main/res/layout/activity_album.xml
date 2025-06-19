@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent">
+
+<!-- CONTENIDO SCROLLEABLE -->
 <ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="SpeakableTextPresent"
     android:id="@+id/svAlbum"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_above="@+id/barraReproductor"
     android:padding="16dp">
 
     <LinearLayout
@@ -13,6 +18,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- TODO: Aquí va todo tu layout original sin cambios -->
+        <!-- Cabecera: botón volver + portada + datos -->
+        <!-- Botones de acción -->
+        <!-- Sección Canciones -->
+
+        <!-- ... (pegas lo de antes sin modificar) ... -->
         <!-- Cabecera: botón volver + portada + datos -->
         <LinearLayout
             android:orientation="horizontal"
@@ -118,3 +129,33 @@
             android:layout_height="wrap_content"/>
     </LinearLayout>
 </ScrollView>
+
+<!-- BARRA FIJA ABAJO -->
+<LinearLayout
+    android:id="@+id/barraReproductor"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:orientation="horizontal"
+    android:background="#EEEEEE"
+    android:padding="8dp"
+    android:gravity="center_vertical"
+    android:visibility="gone">
+
+    <TextView
+        android:id="@+id/txtMiniTitulo"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:text="Canción actual"
+        android:textStyle="bold" />
+
+    <ImageButton
+        android:id="@+id/btnMiniPlayPause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_play"
+        android:background="@android:color/transparent" />
+</LinearLayout>
+
+</RelativeLayout>

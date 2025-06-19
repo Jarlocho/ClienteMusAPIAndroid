@@ -1,88 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:padding="16dp"
-    tools:ignore="NestedScrolling,ImageContrastCheck,TextContrastCheck,Autofill">
+    android:background="@android:color/white">
 
-    <!-- Barra superior -->
+    <!-- CONTENIDO PRINCIPAL: barra búsqueda, resultados, etc. -->
     <LinearLayout
-        android:orientation="horizontal"
+        android:id="@+id/contenidoBusqueda"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="16dp">
+        android:layout_height="match_parent"
+        android:layout_above="@id/barraReproductor">
 
-        <ImageButton
-            android:id="@+id/btn_volver_busqueda"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_media_previous"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/desc_volver"/>
+        <!-- Barra superior -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
 
-        <EditText
-            android:id="@+id/et_busqueda"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:hint="@string/hint_buscar"
-            android:inputType="text"
-            android:padding="8dp"
-            tools:ignore="TextContrastCheck,Autofill"/>
+            <ImageButton
+                android:id="@+id/btn_volver_busqueda"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@android:drawable/ic_media_previous"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/desc_volver"/>
 
-        <ImageButton
-            android:id="@+id/btn_buscar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_search"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/desc_buscar"/>
+            <EditText
+                android:id="@+id/et_busqueda"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:hint="@string/hint_buscar"
+                android:inputType="text"
+                android:padding="8dp"
+                tools:ignore="TextContrastCheck,Autofill"/>
 
-        <Spinner
-            android:id="@+id/spinner_tipo"
+            <ImageButton
+                android:id="@+id/btn_buscar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@android:drawable/ic_menu_search"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/desc_buscar"/>
+
+            <Spinner
+                android:id="@+id/spinner_tipo"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:entries="@array/tipos_busqueda"/>
+
+            <ImageButton
+                android:id="@+id/btn_perfil_usuario"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="8dp"
+                android:src="@android:drawable/ic_menu_myplaces"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/desc_perfil_usuario"/>
+
+        </LinearLayout>
+
+        <!-- Título resultados -->
+        <TextView
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:entries="@array/tipos_busqueda"/>
+            android:layout_height="wrap_content"
+            android:text="@string/resultados"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"/>
 
-        <ImageButton
-            android:id="@+id/btn_perfil_usuario"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="8dp"
-            android:src="@android:drawable/ic_menu_myplaces"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/desc_perfil_usuario"/>
+        <!-- Contenedor de resultados -->
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:contentDescription="@string/resultados"
+            tools:ignore="NestedScrolling,SpeakableTextPresent">
 
+            <LinearLayout
+                android:id="@+id/ll_resultados"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </ScrollView>
     </LinearLayout>
 
-    <!-- Título resultados -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/resultados"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp"/>
-
-    <!-- Contenedor de resultados -->
-    <ScrollView
+    <!-- BARRA DE REPRODUCTOR FIJA ABAJO -->
+    <LinearLayout
+        android:id="@+id/barraReproductor"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:contentDescription="@string/resultados"
-        tools:ignore="NestedScrolling,SpeakableTextPresent">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="#EEEEEE"
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        android:visibility="gone">
 
-        <LinearLayout
-            android:id="@+id/ll_resultados"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </ScrollView>
+        <TextView
+            android:id="@+id/txtMiniTitulo"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Canción actual"
+            android:textStyle="bold" />
 
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/btnMiniPlayPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_play"
+            android:background="@android:color/transparent" />
+    </LinearLayout>
+
+</RelativeLayout>

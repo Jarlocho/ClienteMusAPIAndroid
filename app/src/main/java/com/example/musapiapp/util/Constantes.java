@@ -8,9 +8,9 @@ public class Constantes {
     /**
      * Base para peticiones web.
      * Desde el emulador: 10.0.2.2 → localhost de tu máquina
-     * Pablo: 192.168.1.9
+     * Pablo: 192.168.1.17
      */
-    public static final String URL_BASE = "http://192.168.1.9:" + PUERTO;
+    public static final String URL_BASE = "http://192.168.1.17:" + PUERTO;
 
     /** Añade “/api/” al final para los endpoints de Retrofit **/
     public static final String URL_API  = URL_BASE + "/api/";

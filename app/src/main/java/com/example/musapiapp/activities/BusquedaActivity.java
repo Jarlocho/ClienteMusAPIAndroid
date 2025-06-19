@@ -31,18 +31,20 @@ import com.example.musapiapp.network.ServicioBusqueda;
 import com.example.musapiapp.activities.PerfilUsuarioActivity;
 import com.example.musapiapp.util.Constantes;
 import com.example.musapiapp.util.Preferencias;
+import com.example.musapiapp.util.Reproductor;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class BusquedaActivity extends AppCompatActivity {
+public class BusquedaActivity extends BaseActivity {
     private EditText      etBusqueda;
     private Spinner       spinnerTipo;
     private LinearLayout  llResultados;
@@ -134,6 +136,16 @@ public class BusquedaActivity extends AppCompatActivity {
                         i.putExtra(CancionActivity.EXTRA_CANCION, dto);
                         startActivity(i);
                     });
+                    btnPlay.setOnClickListener(v -> {
+
+                        ArrayList<BusquedaCancionDTO> lista = new ArrayList<>();
+                        lista.add(dto);
+                        Reproductor.reproducirCancion(lista, 0, BusquedaActivity.this);
+
+                        startActivity(new Intent(BusquedaActivity.this, ReproductorActivity.class));
+                    });
+
+
 
                     llResultados.addView(item);
                 }
@@ -176,6 +188,7 @@ public class BusquedaActivity extends AppCompatActivity {
                     TextView  tvAutor  = item.findViewById(R.id.tvAutor);
                     TextView  btnDet   = item.findViewById(R.id.btnVerDetalles);
                     View      btnSave  = item.findViewById(R.id.btnGuardar);
+                    ImageButton btnPlay  = item.findViewById(R.id.btnReproducir);
 
                     tvNombre.setText(dto.getNombreAlbum());
                     tvAutor .setText(dto.getNombreArtista());
@@ -186,6 +199,13 @@ public class BusquedaActivity extends AppCompatActivity {
                         i.putExtra(AlbumActivity.EXTRA_ALBUM, dto);
                         startActivity(i);
                     });
+                    btnPlay.setOnClickListener(v -> {
+                        ArrayList<BusquedaCancionDTO> canciones = new ArrayList<>(dto.getCanciones());
+                        Reproductor.reproducirCancion(canciones, 0, BusquedaActivity.this);
+
+                        startActivity(new Intent(BusquedaActivity.this, ReproductorActivity.class));
+                    });
+
 
                     llResultados.addView(item);
                 }

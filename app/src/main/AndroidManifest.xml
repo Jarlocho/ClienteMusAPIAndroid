@@ -137,6 +137,9 @@
                 android:value=".activities.PerfilArtistaActivity"/>
         </activity>
 
+        <!-- Reproductor -->
+        <activity android:name=".activities.ReproductorActivity" />
+
     </application>
 
 </manifest>

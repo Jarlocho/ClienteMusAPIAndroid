@@ -11,16 +11,23 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.example.musapiapp.network.ApiCliente;
 
 import com.bumptech.glide.Glide;
 import com.example.musapiapp.R;
 import com.example.musapiapp.dto.BusquedaAlbumDTO;
 import com.example.musapiapp.dto.BusquedaCancionDTO;
+import com.example.musapiapp.util.Constantes;
+import com.example.musapiapp.util.Preferencias;
+import com.example.musapiapp.util.Reproductor;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class AlbumActivity extends AppCompatActivity {
+public class AlbumActivity extends BaseActivity {
     public static final String EXTRA_ALBUM = "EXTRA_ALBUM";
     String baseUrl = ApiCliente.getUrlArchivos();
 
@@ -47,44 +54,49 @@ public class AlbumActivity extends AppCompatActivity {
             tvNombreAlbum.setText(album.getNombreAlbum());
             tvArtista    .setText(album.getNombreArtista());
             tvFecha      .setText(album.getFechaPublicacion());
-            Glide.with(this)
-                    .load(baseUrl + album.getUrlFoto())
-                    .into(ivPortada);
+            cargarImagen(album.getUrlFoto(), ivPortada);
 
             // Inflar canciones
             List<BusquedaCancionDTO> songs = album.getCanciones();
             if (songs != null) {
                 long totalSeg = 0;
                 llCanciones.removeAllViews();
-                for (BusquedaCancionDTO c : songs) {
+                for (int i = 0; i < songs.size(); i++) {
+                    BusquedaCancionDTO c = songs.get(i);
+                    int finalI = i;
+
                     View item = LayoutInflater.from(this)
                             .inflate(R.layout.item_contenido, llCanciones, false);
-                    TextView    tvN = item.findViewById(R.id.tvNombre);
-                    TextView    tvA = item.findViewById(R.id.tvAutor);
-                    ImageView   iv = item.findViewById(R.id.imgFoto);
-                    Button      bd = item.findViewById(R.id.btnVerDetalles);
+                    TextView tvN = item.findViewById(R.id.tvNombre);
+                    TextView tvA = item.findViewById(R.id.tvAutor);
+                    ImageView iv = item.findViewById(R.id.imgFoto);
+                    Button bd = item.findViewById(R.id.btnVerDetalles);
                     ImageButton bp = item.findViewById(R.id.btnReproducir);
 
                     tvN.setText(c.getNombre());
                     tvA.setText(c.getNombreArtista());
-                    Glide.with(this)
-                            .load(baseUrl + c.getUrlFoto())
-                            .into(iv);
+                    cargarImagen(c.getUrlFoto(), iv);
+
+                    bp.setOnClickListener(v -> {
+                        ArrayList<BusquedaCancionDTO> canciones = new ArrayList<>(songs);
+                        Reproductor.reproducirCancion(canciones, finalI, AlbumActivity.this);
+                        startActivity(new Intent(AlbumActivity.this, ReproductorActivity.class));
+                    });
 
                     bd.setOnClickListener(v -> {
-                        Intent i = new Intent(this, CancionActivity.class);
-                        i.putExtra(CancionActivity.EXTRA_CANCION, c);
-                        startActivity(i);
+                        Intent iDetalle = new Intent(this, CancionActivity.class);
+                        iDetalle.putExtra(CancionActivity.EXTRA_CANCION, c);
+                        startActivity(iDetalle);
                     });
-                    // TODO: bp.setOnClickListener → reproducir fichero
 
                     llCanciones.addView(item);
 
-                    // sumar duración
+                    // Sumar duración
                     String[] p = c.getDuracion().split(":");
                     long seg = Integer.parseInt(p[0]) * 60 + Integer.parseInt(p[1]);
                     totalSeg += seg;
                 }
+
                 long h = totalSeg / 3600,
                         m = (totalSeg % 3600) / 60,
                         s = totalSeg % 60;
@@ -95,5 +107,22 @@ public class AlbumActivity extends AppCompatActivity {
                 // TODO: lógica de seguir artista
             });
         }
+    }
+    private void cargarImagen(String url, ImageView destino) {
+        if (url == null || url.isEmpty()) return;
+
+        String token = Preferencias.obtenerToken(this); // O contexto si estás fuera de actividad
+        String bearer = token != null ? "Bearer " + token : "";
+
+        GlideUrl glideUrl = new GlideUrl(
+                Constantes.URL_BASE + url,
+                new LazyHeaders.Builder()
+                        .addHeader("Authorization", bearer)
+                        .build()
+        );
+
+        Glide.with(this)
+                .load(glideUrl)
+                .into(destino);
     }
 }
