@@ -1,4 +1,5 @@
 package com.example.musapiapp.activities;
+import com.example.musapiapp.dto.SolicitudInicioSesion;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -301,18 +302,46 @@ public class RegistroActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null
                         && response.body().getDatos() != null) {
 
-                    // 1) Obtén el DTO
+                    // 1) Datos del registro
                     UsuarioDTO u = response.body().getDatos();
+                    String email = u.getCorreo();
+                    String pass  = inputContrasena.getText().toString().trim();
 
-                    // 2) Guarda token y usuario JSON
-                    Preferencias.guardarToken(RegistroActivity.this, u.getToken());
-                    String usuarioJson = new Gson().toJson(u);
-                    Preferencias.guardarUsuarioJson(RegistroActivity.this, usuarioJson);
+                    // 2) Hacemos login automático justo después de registrar
+                    ServicioUsuario srvLogin = ApiCliente
+                            .getClient(RegistroActivity.this)
+                            .create(ServicioUsuario.class);
+                    srvLogin.iniciarSesion(new SolicitudInicioSesion(email, pass))
+                            .enqueue(new Callback<RespuestaCliente<UsuarioDTO>>() {
+                                @Override
+                                public void onResponse(Call<RespuestaCliente<UsuarioDTO>> c2,
+                                                       Response<RespuestaCliente<UsuarioDTO>> r2) {
+                                    if (r2.isSuccessful() && r2.body() != null
+                                            && r2.body().getDatos() != null) {
+                                        // Login OK: guardamos token real y UsuarioDTO
+                                        UsuarioDTO logged = r2.body().getDatos();
+                                        Preferencias.guardarToken(RegistroActivity.this, logged.getToken());
+                                        Preferencias.guardarUsuarioJson(
+                                                RegistroActivity.this,
+                                                new Gson().toJson(logged)
+                                        );
+                                        // 3) Navegamos al menú
+                                        startActivity(new Intent(RegistroActivity.this,
+                                                MenuPrincipalActivity.class));
+                                        finish();
+                                    } else {
+                                        Toast.makeText(RegistroActivity.this,
+                                                "Registro OK, pero falló el login automático",
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                                @Override public void onFailure(Call<RespuestaCliente<UsuarioDTO>> c2, Throwable t2) {
+                                    Toast.makeText(RegistroActivity.this,
+                                            "Error de conexión en login automático",
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
 
-                    // 3) Ahora sí navega al menú principal
-                    Intent intent = new Intent(RegistroActivity.this, MenuPrincipalActivity.class);
-                    startActivity(intent);
-                    finish();
                 } else {
                     String msg = "Código: " + response.code();
                     try {
