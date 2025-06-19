@@ -134,7 +134,7 @@ public class EditarPerfilActivity extends AppCompatActivity {
         ServicioUsuario srv = ApiCliente.getClient(this)
                 .create(ServicioUsuario.class);
 
-        srv.obtenerPerfilArtista(idUsuario)
+        srv.obtenerPerfilArtista(bearer, idUsuario)
                 .enqueue(new Callback<RespuestaCliente<BusquedaArtistaDTO>>() {
                     @Override
                     public void onResponse(Call<RespuestaCliente<BusquedaArtistaDTO>> call,
@@ -473,14 +473,10 @@ public class EditarPerfilActivity extends AppCompatActivity {
                 .create(ServicioUsuario.class);
 
         srv.editarPerfil(
-                        idUsuario,
-                        rbNombre,
-                        rbNombreUsuario,
-                        rbPais,
-                        rbDesc,
-                        parteFoto
-                )
-                .enqueue(new Callback<Void>() {
+                bearer, idUsuario,
+                rbNombre, rbNombreUsuario, rbPais, rbDesc,
+                parteFoto
+        ).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> resp) {
                 if (resp.isSuccessful()) {

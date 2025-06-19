@@ -88,7 +88,7 @@ public class PerfilArtistaActivity extends AppCompatActivity {
                 .getClient(this)
                 .create(ServicioUsuario.class);
 
-        srv.obtenerPerfilArtista(id)
+        srv.obtenerPerfilArtista(bearer, id)
                 .enqueue(new Callback<RespuestaCliente<BusquedaArtistaDTO>>() {
                     @Override
                     public void onResponse(Call<RespuestaCliente<BusquedaArtistaDTO>> call,
