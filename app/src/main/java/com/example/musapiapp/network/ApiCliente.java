@@ -3,6 +3,7 @@ package com.example.musapiapp.network;
 
 import android.content.Context;
 
+import com.example.musapiapp.util.Constantes;
 import com.example.musapiapp.util.Preferencias;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiCliente {
+<<<<<<< HEAD
     private static String BASE_URL = "http://10.0.2.2:8080/api/";
     //private static String BASE_URL = "http://192.168.1.9:8080/api/";
 
@@ -29,6 +31,11 @@ public class ApiCliente {
 
     private static String URL_ARCHIVOS = "http://10.0.2.2:8080";
     //private static String URL_ARCHIVOS = "http://192.168.1.9:8080";
+=======
+    //Ruta Jarly private static final String BASE_URL = "http://10.0.2.2:8080/api/";
+    private static final String BASE_URL = Constantes.URL_API;
+
+>>>>>>> 25e58b2956d22705ecae0b7003a3ea39ee7f7cdd
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient(Context context) {
