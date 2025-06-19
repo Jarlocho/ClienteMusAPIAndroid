@@ -1,3 +1,4 @@
+// src/main/java/com/example/musapiapp/activities/PerfilUsuarioActivity.java
 package com.example.musapiapp.activities;
 
 import android.content.Intent;
@@ -17,60 +18,50 @@ import com.example.musapiapp.util.Preferencias;
 import com.google.gson.Gson;
 
 public class PerfilUsuarioActivity extends AppCompatActivity {
-    private static final int REQ_EDITAR_PERFIL = 1001;
+    private static final int REQ_EDITAR_PERFIL     = 1001;
+    private static final int REQ_CREAR_ARTISTA     = 1002; // nueva constante
+    public  static final String EXTRA_ID_ARTISTA   = "EXTRA_ID_ARTISTA";
+
     private ImageButton btnVolver;
-    private TextView tvNombre, tvUsuario;
-    private Button btnCrearPerfilArtista, btnVerPerfilArtista,
-            btnVerEstadisticas, btnEditarPerfil;
-    private LinearLayout llListas;
+    private TextView    tvNombre, tvUsuario;
+    private Button      btnCrearPerfilArtista,
+            btnVerPerfilArtista,
+            btnVerEstadisticas,
+            btnEditarPerfil;
     private LinearLayout llAcciones;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil_usuario);
-        llAcciones = findViewById(R.id.ll_acciones);
-        // Referencias
-        btnVolver             = findViewById(R.id.btn_volver);
-        tvNombre              = findViewById(R.id.tv_nombre);
-        tvUsuario             = findViewById(R.id.tv_usuario);
-        btnCrearPerfilArtista = findViewById(R.id.btn_crear_perfil_artista);
-        btnVerPerfilArtista   = findViewById(R.id.btn_ver_perfil_artista);
-        btnVerEstadisticas    = findViewById(R.id.btn_ver_estadisticas);
-        btnEditarPerfil       = findViewById(R.id.btn_editar_perfil);
-        llListas              = findViewById(R.id.ll_listas);
+        llAcciones           = findViewById(R.id.ll_acciones);
+        btnVolver            = findViewById(R.id.btn_volver);
+        tvNombre             = findViewById(R.id.tv_nombre);
+        tvUsuario            = findViewById(R.id.tv_usuario);
+        btnCrearPerfilArtista= findViewById(R.id.btn_crear_perfil_artista);
+        btnVerPerfilArtista  = findViewById(R.id.btn_ver_perfil_artista);
+        btnVerEstadisticas   = findViewById(R.id.btn_ver_estadisticas);
+        btnEditarPerfil      = findViewById(R.id.btn_editar_perfil);
 
-        // Botón volver
         btnVolver.setOnClickListener(v -> onBackPressed());
 
-        // Recuperar UsuarioDTO de SharedPreferences
-        String jsonUsuario = Preferencias.recuperarUsuarioJson(this);
-        if (jsonUsuario != null) {
-            UsuarioDTO u = new Gson().fromJson(jsonUsuario, UsuarioDTO.class);
-            // Llenar datos
-            tvNombre.setText(u.getNombre());
-            tvUsuario.setText("@" + u.getNombreUsuario());
+        // Acción CREAR perfil artista con callback
+        btnCrearPerfilArtista.setOnClickListener(v -> {
+            Intent i = new Intent(this, CrearPerfilArtistaActivity.class);
+            startActivityForResult(i, REQ_CREAR_ARTISTA);
+        });
 
-            // Mostrar/ocultar acciones
-            if (u.isEsArtista()) {
-                btnVerPerfilArtista.setVisibility(View.VISIBLE);
-                btnCrearPerfilArtista.setVisibility(View.GONE);
-            } else {
-                btnCrearPerfilArtista.setVisibility(View.VISIBLE);
-                btnVerPerfilArtista.setVisibility(View.GONE);
+        // Acción VER perfil artista, enviamos el ID desde el UsuarioDTO
+        btnVerPerfilArtista.setOnClickListener(v -> {
+            String json = Preferencias.recuperarUsuarioJson(this);
+            if (json != null) {
+                UsuarioDTO u = new Gson().fromJson(json, UsuarioDTO.class);
+                Intent i = new Intent(this, PerfilArtistaActivity.class);
+                i.putExtra(EXTRA_ID_ARTISTA, u.getIdUsuario());
+                startActivity(i);
             }
-            llAcciones.post(() -> {
-                llAcciones.requestLayout();
-                llAcciones.invalidate();
-            });        }
+        });
 
-        // Listeners de acciones
-        btnCrearPerfilArtista.setOnClickListener(v ->
-                startActivity(new Intent(this, CrearPerfilArtistaActivity.class))
-        );
-        btnVerPerfilArtista.setOnClickListener(v ->
-                startActivity(new Intent(this, PerfilArtistaActivity.class))
-        );
         btnVerEstadisticas.setOnClickListener(v -> {
             // TODO: implementar
         });
@@ -78,13 +69,21 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
             Intent i = new Intent(this, EditarPerfilActivity.class);
             startActivityForResult(i, REQ_EDITAR_PERFIL);
         });
+
         recargarUsuario();
-        // TODO: llenar llListas con las listas del usuario
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode,
+                                    @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        // Si acabamos de crear perfil de artista, recargamos para actualizar botones
+        if (requestCode == REQ_CREAR_ARTISTA && resultCode == RESULT_OK) {
+            recargarUsuario();
+        }
+
+        // Si editamos datos de usuario
         if (requestCode == REQ_EDITAR_PERFIL && resultCode == RESULT_OK) {
             recargarUsuario();
         }
@@ -94,11 +93,9 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
         String jsonUsuario = Preferencias.recuperarUsuarioJson(this);
         if (jsonUsuario != null) {
             UsuarioDTO u = new Gson().fromJson(jsonUsuario, UsuarioDTO.class);
-
-            tvNombre.setText(u.getNombre());
+            tvNombre .setText(u.getNombre());
             tvUsuario.setText("@" + u.getNombreUsuario());
 
-            // refresca botones
             if (u.isEsArtista()) {
                 btnVerPerfilArtista.setVisibility(View.VISIBLE);
                 btnCrearPerfilArtista.setVisibility(View.GONE);
@@ -109,11 +106,4 @@ public class PerfilUsuarioActivity extends AppCompatActivity {
             llAcciones.requestLayout();
         }
     }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        recargarUsuario();
-    }
-
 }
