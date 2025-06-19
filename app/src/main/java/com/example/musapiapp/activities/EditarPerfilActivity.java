@@ -32,6 +32,7 @@ import com.example.musapiapp.dto.UsuarioDTO;
 import com.example.musapiapp.model.Pais;
 import com.example.musapiapp.network.ApiCliente;
 import com.example.musapiapp.network.ServicioUsuario;
+import com.example.musapiapp.util.Constantes;
 import com.example.musapiapp.util.Preferencias;
 import com.google.gson.Gson;
 
@@ -425,8 +426,7 @@ public class EditarPerfilActivity extends AppCompatActivity {
             @Override
             protected Bitmap doInBackground(Void... voids) {
                 try {
-                    ApiCliente apiCliente = new ApiCliente();
-                    URL url = new URL( apiCliente.getUrlArchivos()+ urlImagen);
+                    URL url = new URL(  Constantes.URL_BASE +urlImagen);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     String token = Preferencias.obtenerToken(EditarPerfilActivity.this);
                     String bearer = token != null ? "Bearer " + token : "";

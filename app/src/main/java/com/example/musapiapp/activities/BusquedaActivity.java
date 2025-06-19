@@ -119,7 +119,7 @@ public class BusquedaActivity extends AppCompatActivity {
                     tvAutor .setText(dto.getNombreArtista());
                     btnSave .setVisibility(View.GONE);
                     Glide.with(BusquedaActivity.this)
-                            .load("http://10.0.2.2:8080" + dto.getUrlFoto())
+                            .load("http://192.168.1.9:8080" + dto.getUrlFoto())
                             .into(ivFoto);
 
                     btnDet.setOnClickListener(v -> {
@@ -174,7 +174,7 @@ public class BusquedaActivity extends AppCompatActivity {
                     tvAutor .setText(dto.getNombreArtista());
                     btnSave .setVisibility(View.GONE);
                     Glide.with(BusquedaActivity.this)
-                            .load("http://10.0.2.2:8080" + dto.getUrlFoto())
+                            .load("http://192.168.1.9:8080" + dto.getUrlFoto())
                             .into(ivFoto);
 
                     btnDet.setOnClickListener(v -> {
@@ -230,7 +230,7 @@ public class BusquedaActivity extends AppCompatActivity {
                     tvAutor .setText("@" + dto.getNombreUsuario());
                     btnSave .setText(R.string.seguir);
                     Glide.with(BusquedaActivity.this)
-                            .load("http://10.0.2.2:8080" + dto.getUrlFoto())
+                            .load("http://192.168.1.9:8080" + dto.getUrlFoto())
                             .into(ivFoto);
 
                     btnDet.setOnClickListener(v -> {
