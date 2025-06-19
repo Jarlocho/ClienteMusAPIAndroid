@@ -81,7 +81,10 @@ public class ChatActivity extends AppCompatActivity {
                 .build();
 
         // Construye ws://… a partir de Constantes.URL_BASE (“http://host:puerto” → “ws://host:puerto/ws”)
-        String wsUrl = Constantes.URL_BASE.replaceFirst("^http", "ws") + "/ws";
+        String wsUrl = Constantes.URL_BASE
+                .replaceFirst("^http", "ws")
+                + "/ws/" + idArtista;
+
 
         Request request = new Request.Builder()
                 .url(wsUrl)
