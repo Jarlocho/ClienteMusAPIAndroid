@@ -1,14 +1,16 @@
+// src/main/java/com/example/musapiapp/util/Constantes.java
 package com.example.musapiapp.util;
 
 public class Constantes {
-    //Puerto nginx: 8088 CREO
-    //Puerto desarrollo: 8080
-    public static String PUERTO = "8080";
+    /** Puerto donde corre tu API en NetBeans **/
+    public static final String PUERTO   = "8080";
 
-    //Url Desarrollo
-    // Jarly: http://10.0.2.2:
-    // Pablo: http://192.168.1.9:
-    // Nginx: http://...:
-    public static String URL_BASE = "http://192.168.1.9:"+PUERTO;
-    public static String URL_API = URL_BASE + "/api/";
+    /**
+     * Base para peticiones web.
+     * Desde el emulador: 10.0.2.2 → localhost de tu máquina
+     */
+    public static final String URL_BASE = "http://10.0.2.2:" + PUERTO;
+
+    /** Añade “/api/” al final para los endpoints de Retrofit **/
+    public static final String URL_API  = URL_BASE + "/api/";
 }
