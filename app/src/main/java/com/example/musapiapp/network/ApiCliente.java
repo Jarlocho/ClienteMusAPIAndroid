@@ -16,8 +16,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiCliente {
-    //Ruta Jarly private static final String BASE_URL = "http://10.0.2.2:8080/api/";
-    private static final String BASE_URL = "http://192.168.1.9:8080/api/";
+    private static String BASE_URL = "http://10.0.2.2:8080/api/";
+    //private static String BASE_URL = "http://192.168.1.9:8080/api/";
 
     public static String getUrlArchivos() {
         return URL_ARCHIVOS;
@@ -27,8 +27,8 @@ public class ApiCliente {
         URL_ARCHIVOS = urlArchivos;
     }
 
-    //Ruta Jarly private static final String URL_ARCHIVOS = "http://10.0.2.2:8080";
-    private static String URL_ARCHIVOS = "http://192.168.1.9:8080";
+    private static String URL_ARCHIVOS = "http://10.0.2.2:8080";
+    //private static String URL_ARCHIVOS = "http://192.168.1.9:8080";
     private static Retrofit retrofit = null;
 
     public static Retrofit getClient(Context context) {

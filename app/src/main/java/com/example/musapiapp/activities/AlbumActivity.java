@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import com.example.musapiapp.network.ApiCliente;
 
 import com.bumptech.glide.Glide;
 import com.example.musapiapp.R;
@@ -21,6 +22,7 @@ import java.util.List;
 
 public class AlbumActivity extends AppCompatActivity {
     public static final String EXTRA_ALBUM = "EXTRA_ALBUM";
+    String baseUrl = ApiCliente.getUrlArchivos();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +48,7 @@ public class AlbumActivity extends AppCompatActivity {
             tvArtista    .setText(album.getNombreArtista());
             tvFecha      .setText(album.getFechaPublicacion());
             Glide.with(this)
-                    .load("http://10.0.2.2:8080" + album.getUrlFoto())
+                    .load(baseUrl + album.getUrlFoto())
                     .into(ivPortada);
 
             // Inflar canciones
@@ -66,7 +68,7 @@ public class AlbumActivity extends AppCompatActivity {
                     tvN.setText(c.getNombre());
                     tvA.setText(c.getNombreArtista());
                     Glide.with(this)
-                            .load("http://10.0.2.2:8080" + c.getUrlFoto())
+                            .load(baseUrl + c.getUrlFoto())
                             .into(iv);
 
                     bd.setOnClickListener(v -> {
