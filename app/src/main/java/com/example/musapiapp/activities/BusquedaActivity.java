@@ -1,6 +1,10 @@
 package com.example.musapiapp.activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,7 +29,13 @@ import com.example.musapiapp.dto.RespuestaCliente;
 import com.example.musapiapp.network.ApiCliente;
 import com.example.musapiapp.network.ServicioBusqueda;
 import com.example.musapiapp.activities.PerfilUsuarioActivity;
+import com.example.musapiapp.util.Constantes;
+import com.example.musapiapp.util.Preferencias;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 import retrofit2.Call;
@@ -118,10 +128,7 @@ public class BusquedaActivity extends AppCompatActivity {
                     tvNombre.setText(dto.getNombre());
                     tvAutor .setText(dto.getNombreArtista());
                     btnSave .setVisibility(View.GONE);
-                    Glide.with(BusquedaActivity.this)
-                            .load("http://192.168.1.9:8080" + dto.getUrlFoto())
-                            .into(ivFoto);
-
+                    cargarImagen(dto.getUrlFoto(), ivFoto);
                     btnDet.setOnClickListener(v -> {
                         Intent i = new Intent(BusquedaActivity.this, CancionActivity.class);
                         i.putExtra(CancionActivity.EXTRA_CANCION, dto);
@@ -173,10 +180,7 @@ public class BusquedaActivity extends AppCompatActivity {
                     tvNombre.setText(dto.getNombreAlbum());
                     tvAutor .setText(dto.getNombreArtista());
                     btnSave .setVisibility(View.GONE);
-                    Glide.with(BusquedaActivity.this)
-                            .load("http://192.168.1.9:8080" + dto.getUrlFoto())
-                            .into(ivFoto);
-
+                    cargarImagen(dto.getUrlFoto(), ivFoto);
                     btnDet.setOnClickListener(v -> {
                         Intent i = new Intent(BusquedaActivity.this, AlbumActivity.class);
                         i.putExtra(AlbumActivity.EXTRA_ALBUM, dto);
@@ -229,9 +233,7 @@ public class BusquedaActivity extends AppCompatActivity {
                     tvNombre.setText(dto.getNombre());
                     tvAutor .setText("@" + dto.getNombreUsuario());
                     btnSave .setText(R.string.seguir);
-                    Glide.with(BusquedaActivity.this)
-                            .load("http://192.168.1.9:8080" + dto.getUrlFoto())
-                            .into(ivFoto);
+                    cargarImagen(dto.getUrlFoto(), ivFoto);
 
                     btnDet.setOnClickListener(v -> {
                         Intent i = new Intent(BusquedaActivity.this, PerfilArtistaActivity.class);
@@ -248,6 +250,45 @@ public class BusquedaActivity extends AppCompatActivity {
                         R.string.error_conexion, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void cargarImagen(String urlImagen, ImageView imageView) {
+        if (urlImagen == null || urlImagen.isEmpty()) {
+            return;
+        }
+
+        new AsyncTask<Void, Void, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(Void... voids) {
+                try {
+                    URL url = new URL(  Constantes.URL_BASE +urlImagen);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    String token = Preferencias.obtenerToken(BusquedaActivity.this);
+                    String bearer = token != null ? "Bearer " + token : "";
+                    connection.setRequestProperty("Authorization", bearer);
+                    connection.setDoInput(true);
+                    connection.connect();
+
+                    InputStream input = connection.getInputStream();
+                    Bitmap bitmap = BitmapFactory.decodeStream(input);
+                    input.close();
+
+                    return bitmap;
+                } catch (Exception e) {
+                    //ivFoto.setImageResource(R.drawable.musapi_logo);
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                if (bitmap != null && imageView != null) {
+                    imageView.setImageBitmap(bitmap);
+                }
+            }
+        }.execute();
     }
 
     private <T> void logAndToast(String tag, Response<RespuestaCliente<T>> r) {
