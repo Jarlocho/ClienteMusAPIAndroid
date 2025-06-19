@@ -17,22 +17,33 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiCliente {
-    //Ruta Jarly private static final String BASE_URL = "http://10.0.2.2:8080/api/";
+    /** BaseURL para Retrofit (apunta a http://10.0.2.2:8080/api/) */
     private static final String BASE_URL = Constantes.URL_API;
+
+    /** URL sin “/api” para cargar imágenes, ficheros, etc. */
+    private static       String URL_ARCHIVOS = Constantes.URL_BASE;
 
     private static Retrofit retrofit = null;
 
+    /** Getter/Setter para URL_ARCHIVOS en caso de cambiar dinámicamente **/
+    public static String getUrlArchivos() {
+        return URL_ARCHIVOS;
+    }
+    public static void setUrlArchivos(String urlArchivos) {
+        URL_ARCHIVOS = urlArchivos;
+    }
+
+    /** Crea (o devuelve) la instancia singleton de Retrofit **/
     public static Retrofit getClient(Context context) {
         if (retrofit == null) {
-            // 1) Interceptor de autenticación SOLO para URLs que empiecen por BASE_URL
+            // 1) Interceptor de autenticación sólo para peticiones a BASE_URL
             Interceptor authInterceptor = new Interceptor() {
                 @Override
                 public Response intercept(Chain chain) throws IOException {
                     Request original = chain.request();
-                    String url = original.url().toString();
                     Request.Builder builder = original.newBuilder();
+                    String url = original.url().toString();
 
-                    // sólo si es petición a tu API (/api/...)
                     if (url.startsWith(BASE_URL)) {
                         String token = Preferencias.obtenerToken(context);
                         if (token != null) {
@@ -53,7 +64,7 @@ public class ApiCliente {
                     .addInterceptor(logInterceptor)
                     .build();
 
-            // 4) Retrofit con el cliente personalizado
+            // 4) Instancia Retrofit
             retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .client(client)

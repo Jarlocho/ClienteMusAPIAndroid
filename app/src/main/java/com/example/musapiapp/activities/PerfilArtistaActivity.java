@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.musapiapp.R;
 import com.example.musapiapp.dto.BusquedaArtistaDTO;
+import com.example.musapiapp.network.ApiCliente;
 
 public class PerfilArtistaActivity extends AppCompatActivity {
     public static final String EXTRA_ARTISTA = "EXTRA_ARTISTA";
@@ -39,7 +40,7 @@ public class PerfilArtistaActivity extends AppCompatActivity {
 
             // Cargamos la imagen con Glide (ajusta la URL base si es necesario)
             Glide.with(this)
-                    .load("http://10.0.2.2:8080" + dto.getUrlFoto())
+                    .load(ApiCliente.getUrlArchivos() + dto.getUrlFoto())
                     .placeholder(R.drawable.ic_launcher_background)
                     .into(ivFotoArtista);
         }

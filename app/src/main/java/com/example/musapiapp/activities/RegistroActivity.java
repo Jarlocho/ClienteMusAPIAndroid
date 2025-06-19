@@ -19,6 +19,8 @@ import com.example.musapiapp.dto.UsuarioDTO;
 import com.example.musapiapp.dto.UsuarioRegistro;
 import com.example.musapiapp.network.ApiCliente;
 import com.example.musapiapp.network.ServicioUsuario;
+import com.example.musapiapp.util.Preferencias;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.text.Collator;
@@ -296,9 +298,18 @@ public class RegistroActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<RespuestaCliente<UsuarioDTO>> call,
                                    Response<RespuestaCliente<UsuarioDTO>> response) {
-                if (response.isSuccessful() && response.body() != null &&
-                        response.body().getDatos() != null) {
+                if (response.isSuccessful() && response.body() != null
+                        && response.body().getDatos() != null) {
 
+                    // 1) Obtén el DTO
+                    UsuarioDTO u = response.body().getDatos();
+
+                    // 2) Guarda token y usuario JSON
+                    Preferencias.guardarToken(RegistroActivity.this, u.getToken());
+                    String usuarioJson = new Gson().toJson(u);
+                    Preferencias.guardarUsuarioJson(RegistroActivity.this, usuarioJson);
+
+                    // 3) Ahora sí navega al menú principal
                     Intent intent = new Intent(RegistroActivity.this, MenuPrincipalActivity.class);
                     startActivity(intent);
                     finish();
