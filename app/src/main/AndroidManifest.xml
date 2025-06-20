@@ -140,6 +140,15 @@
         <!-- Reproductor -->
         <activity android:name=".activities.ReproductorActivity" />
 
+        <!-- Registrar categoria -->
+        <activity
+            android:name=".activities.CategoriaMusicalActivity"
+            android:parentActivityName=".activities.MenuAdminActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.MenuAdminActivity"/>
+        </activity>
+
     </application>
 
 </manifest>

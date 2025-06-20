@@ -42,11 +42,12 @@ public class MenuAdminActivity extends AppCompatActivity {
         ImageButton btnVolver = findViewById(R.id.btn_volver_busqueda);
         btnVolver.setOnClickListener(v -> onBackPressed());
 
-        /*
-        ImageButton btnPerfilUsuario = findViewById(R.id.btn_perfil_usuario);
-        btnPerfilUsuario.setOnClickListener(v ->
-                startActivity(new Intent(BusquedaActivity.this, PerfilUsuarioActivity.class))
-        );*/
+        ImageButton btnRegistrar = findViewById(R.id.btn_Registrar);
+        btnRegistrar.setOnClickListener(v -> {
+            Intent intent = new Intent(MenuAdminActivity.this, CategoriaMusicalActivity.class);
+            startActivityForResult(intent, 1001); // 1001 = código arbitrario
+        });
+
 
         llResultados = findViewById(R.id.ll_resultados);
 
@@ -89,6 +90,15 @@ public class MenuAdminActivity extends AppCompatActivity {
                     TextView tvNombre = item.findViewById(R.id.tvNombre);
                     TextView tvDescripcion = item.findViewById(R.id.tvDescripcion);
                     View btnEditar = item.findViewById(R.id.btnEditar);
+                    btnEditar.setOnClickListener(v -> {
+                        Intent intent = new Intent(MenuAdminActivity.this, CategoriaMusicalActivity.class);
+                        intent.putExtra("MODO_EDICION", true);  // bandera para saber si es edición
+                        intent.putExtra("CATEGORIA_ID", categoria.getIdCategoriaMusical());
+                        intent.putExtra("CATEGORIA_NOMBRE", categoria.getNombre());
+                        intent.putExtra("CATEGORIA_DESC", categoria.getDescripcion());
+                        startActivityForResult(intent, 1001);
+                    });
+
 
                     tvNombre.setText(categoria.getNombre());
                     tvDescripcion.setText(categoria.getDescripcion());
@@ -120,6 +130,16 @@ public class MenuAdminActivity extends AppCompatActivity {
         try { Log.e(tag, "Error " + r.code() + ": " + r.errorBody().string()); }
         catch (IOException ignored) {}
         Toast.makeText(this, R.string.error_servidor, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1001 && resultCode == RESULT_OK) {
+            // Se acaba de registrar una categoría → refrescamos la lista
+            llResultados.removeAllViews();
+            obtenerCategorias();
+        }
     }
 
 }

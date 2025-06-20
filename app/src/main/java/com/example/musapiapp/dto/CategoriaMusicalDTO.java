@@ -1,21 +1,24 @@
 package com.example.musapiapp.dto;
 
+import com.example.musapiapp.activities.CategoriaMusicalActivity;
+
 public class CategoriaMusicalDTO {
-    private int idCategoriaMusical;
+    private Integer idCategoriaMusical;
     private String nombre;
     private String descripcion;
 
+    public CategoriaMusicalDTO(){}
     public CategoriaMusicalDTO(int idCategoriaMusical, String nombre, String descripcion) {
         this.idCategoriaMusical = idCategoriaMusical;
         this.nombre = nombre;
         this.descripcion = descripcion;
     }
 
-    public int getIdCategoriaMusical() {
+    public Integer getIdCategoriaMusical() {
         return idCategoriaMusical;
     }
 
-    public void setIdCategoriaMusical(int idCategoriaMusical) {
+    public void setIdCategoriaMusical(Integer idCategoriaMusical) {
         this.idCategoriaMusical = idCategoriaMusical;
     }
 

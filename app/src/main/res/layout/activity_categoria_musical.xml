@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="SpeakableTextPresent,TouchTargetSizeCheck,ImageContrastCheck,TextContrastCheck,MissingConstraints"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Cabecera: volver + título -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="24dp">
+
+            <ImageButton
+                android:id="@+id/btnVolver"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_media_previous"
+                app:tint="?android:attr/textColorPrimary"
+                android:contentDescription="@string/desc_volver" />
+
+            <TextView
+                android:id="@+id/tvTitulo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Registrar categoria musical"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginStart="16dp"
+                android:importantForAccessibility="no" />
+        </LinearLayout>
+
+        <!-- Nombre -->
+        <TextView
+            android:id="@+id/labelNombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Nombre"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary"
+            android:visibility="visible"
+            android:labelFor="@+id/etNombre" />
+
+        <EditText
+            android:id="@+id/etNombre"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:minHeight="48dp"
+            android:inputType="textMultiLine|textCapSentences"
+            android:importantForAutofill="no"
+            android:visibility="visible"
+            android:maxLength="100"
+            android:labelFor="@id/labelNombre"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <!-- Descripción-->
+        <TextView
+            android:id="@+id/labelDescripcion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/descripcion_label"
+            android:textStyle="bold"
+            android:textColor="?android:attr/textColorPrimary"
+            android:visibility="visible"
+            android:labelFor="@+id/etDescripcion" />
+
+        <EditText
+            android:id="@+id/etDescripcion"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:minHeight="48dp"
+            android:inputType="textMultiLine|textCapSentences"
+            android:importantForAutofill="no"
+            android:visibility="visible"
+            android:maxLength="300"
+            android:labelFor="@id/labelDescripcion"
+            android:textColor="?android:attr/textColorPrimary" />
+
+        <!-- Confirmar -->
+        <Button
+            android:id="@+id/btnConfirmar"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="24dp"
+            android:text="@string/confirmar"
+            android:contentDescription="@string/desc_confirmar" />
+
+    </LinearLayout>
+</ScrollView>
