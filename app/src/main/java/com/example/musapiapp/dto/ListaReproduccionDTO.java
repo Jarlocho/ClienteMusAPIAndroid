@@ -4,18 +4,27 @@ package com.example.musapiapp.dto;
 import java.io.Serializable;
 
 public class ListaReproduccionDTO implements Serializable {
+    private int    idListaDeReproduccion;
     private String nombre;
     private String descripcion;
-    private int idUsuario;
+    private int    idUsuario;
     private String fotoPath;
 
     public ListaReproduccionDTO() {}
 
-    public ListaReproduccionDTO(String nombre, String descripcion, int idUsuario, String fotoPath) {
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.idUsuario = idUsuario;
-        this.fotoPath = fotoPath;
+    public ListaReproduccionDTO(int idListaDeReproduccion, String nombre, String descripcion, int idUsuario, String fotoPath) {
+        this.idListaDeReproduccion = idListaDeReproduccion;
+        this.nombre                = nombre;
+        this.descripcion           = descripcion;
+        this.idUsuario             = idUsuario;
+        this.fotoPath              = fotoPath;
+    }
+
+    public int getIdListaDeReproduccion() {
+        return idListaDeReproduccion;
+    }
+    public void setIdListaDeReproduccion(int id) {
+        this.idListaDeReproduccion = id;
     }
 
     public String getNombre() {

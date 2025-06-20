@@ -12,15 +12,19 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/barraReproductor">
+        android:layout_above="@id/barraReproductor"
+        android:padding="16dp">
 
-        <!-- Barra superior -->
+        <!-- Barra superior elevada -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="12dp"
+            android:elevation="4dp"
+            android:background="@android:color/white"
+            android:padding="4dp">
 
             <ImageButton
                 android:id="@+id/btn_volver_busqueda"
@@ -37,13 +41,15 @@
                 android:layout_weight="1"
                 android:hint="@string/hint_buscar"
                 android:inputType="text"
-                android:padding="8dp"
+                android:padding="12dp"
+                android:background="@drawable/search_bg"
                 tools:ignore="TextContrastCheck,Autofill"/>
 
             <ImageButton
                 android:id="@+id/btn_buscar"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_marginStart="8dp"
                 android:src="@android:drawable/ic_menu_search"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/desc_buscar"/>
@@ -51,7 +57,7 @@
             <Spinner
                 android:id="@+id/spinner_tipo"
                 android:layout_width="wrap_content"
-                android:layout_height="48dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:entries="@array/tipos_busqueda"/>
 
@@ -73,22 +79,24 @@
             android:text="@string/resultados"
             android:textSize="20sp"
             android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="4dp"/>
+
+        <!-- Divider sutil -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#DDDDDD"
             android:layout_marginBottom="8dp"/>
 
-        <!-- Contenedor de resultados -->
-        <ScrollView
+        <!-- Aquí reemplazamos el ScrollView con RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvResultados"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:contentDescription="@string/resultados"
-            tools:ignore="NestedScrolling,SpeakableTextPresent">
+            tools:listitem="@layout/item_contenido"/>
 
-            <LinearLayout
-                android:id="@+id/ll_resultados"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </ScrollView>
     </LinearLayout>
 
     <!-- BARRA DE REPRODUCTOR FIJA ABAJO -->

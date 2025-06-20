@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="SpeakableTextPresent,NestedScrolling,ImageContrastCheck,TextContrastCheck,Autofill"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@android:color/white"
+    tools:context=".activities.MenuPrincipalActivity">
 
-
-    <!-- SCROLL PRINCIPAL -->
+    <!-- ===== SCROLL PRINCIPAL ===== -->
     <ScrollView
         android:id="@+id/svInicio"
         android:layout_width="match_parent"
@@ -20,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- ====== Barra superior ====== -->
+            <!-- ===== Barra superior ===== -->
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -44,7 +45,6 @@
                     android:layout_weight="1"
                     android:hint="@string/hint_buscar"
                     android:inputType="text"
-                    android:autofillHints="username"
                     android:padding="8dp"
                     android:background="@android:color/white"
                     tools:ignore="TextContrastCheck,Autofill"/>
@@ -89,7 +89,7 @@
                     tools:ignore="ImageContrastCheck"/>
             </LinearLayout>
 
-            <!-- ====== Álbumes ====== -->
+            <!-- ===== Álbumes ===== -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -98,18 +98,14 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp"/>
 
-            <ScrollView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAlbumes"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                tools:ignore="SpeakableTextPresent,NestedScrolling">
-                <LinearLayout
-                    android:id="@+id/ll_albumes"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </ScrollView>
+                tools:listitem="@layout/item_contenido"
+                tools:ignore="NestedScrolling"/>
 
-            <!-- ====== Listas ====== -->
+            <!-- ===== Listas ===== -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -119,18 +115,14 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"/>
 
-            <ScrollView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvListas"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                tools:ignore="SpeakableTextPresent,NestedScrolling">
-                <LinearLayout
-                    android:id="@+id/ll_listas"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </ScrollView>
+                tools:listitem="@layout/item_contenido"
+                tools:ignore="NestedScrolling"/>
 
-            <!-- ====== Artistas ====== -->
+            <!-- ===== Artistas ===== -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -139,21 +131,17 @@
                 android:textStyle="bold"
                 android:layout_marginTop="16dp"/>
 
-            <HorizontalScrollView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvArtistas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:ignore="SpeakableTextPresent,NestedScrolling">
-                <LinearLayout
-                    android:id="@+id/ll_artistas"
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </HorizontalScrollView>
+                tools:listitem="@layout/item_contenido"
+                tools:ignore="NestedScrolling"/>
 
         </LinearLayout>
     </ScrollView>
 
-    <!-- BARRA FIJA DE REPRODUCTOR -->
+    <!-- ===== BARRA FIJA DE REPRODUCTOR ===== -->
     <LinearLayout
         android:id="@+id/barraReproductor"
         android:layout_width="match_parent"

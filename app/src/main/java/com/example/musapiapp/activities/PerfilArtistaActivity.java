@@ -1,8 +1,10 @@
+// src/main/java/com/example/musapiapp/activities/PerfilArtistaActivity.java
 package com.example.musapiapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,7 +23,6 @@ import com.example.musapiapp.dto.UsuarioDTO;
 import com.example.musapiapp.network.ApiCliente;
 import com.example.musapiapp.network.ServicioUsuario;
 import com.example.musapiapp.util.Preferencias;
-import android.view.View;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -30,64 +31,62 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PerfilArtistaActivity extends BaseActivity {
+public class PerfilArtistaActivity extends AppCompatActivity {
+    /** Clave para pasar sólo el ID del artista */
     public static final String EXTRA_ID_ARTISTA = "EXTRA_ID_ARTISTA";
 
-    private ImageButton btnVolver,btnChat,btnEvaluar;
+    private int idArtista;
+    private BusquedaArtistaDTO artista;
+
+    private ImageButton btnVolver, btnChat, btnEvaluar;
     private ImageView   ivFotoArtista;
-    private TextView    tvNombreArtista,
-            tvHandleArtista,
-            tvDescripcionArtista;
-
-
-    private int idArtista = -1;
+    private TextView    tvNombreArtista, tvHandleArtista, tvDescripcionArtista;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil_artista);
 
+        // 1) Leer siempre el ID que viene por EXTRA_ID_ARTISTA
+        if (!getIntent().hasExtra(EXTRA_ID_ARTISTA)) {
+            Toast.makeText(this, "Artista no especificado", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        idArtista = getIntent().getIntExtra(EXTRA_ID_ARTISTA, -1);
+        if (idArtista < 0) {
+            Toast.makeText(this, "Artista no especificado", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // 2) Bind de vistas
         btnVolver            = findViewById(R.id.btn_volver_artista);
         btnChat              = findViewById(R.id.btn_chat);
         ivFotoArtista        = findViewById(R.id.ivFotoArtista);
         tvNombreArtista      = findViewById(R.id.tvNombreArtista);
         tvHandleArtista      = findViewById(R.id.tvHandleArtista);
         tvDescripcionArtista = findViewById(R.id.tvDescripcionArtista);
-        btnEvaluar = findViewById(R.id.btnEvaluar);
+        btnEvaluar           = findViewById(R.id.btnEvaluar);
 
         btnVolver.setOnClickListener(v -> finish());
-
-        // Botón Chat
         btnChat.setOnClickListener(v -> {
-            // Lanzamos la pantalla de chat, pasando el ID y el nombre de usuario actual
             Intent i = new Intent(this, ChatActivity.class);
             i.putExtra(ChatActivity.EXTRA_ID_ARTISTA, idArtista);
-
-            String usuarioJson = Preferencias.recuperarUsuarioJson(this);
-            String handle = "";
-            if (usuarioJson != null) {
-                UsuarioDTO u = new Gson().fromJson(usuarioJson, UsuarioDTO.class);
-                handle = u.getNombreUsuario();
+            // aquí no cambió
+            String ujson = Preferencias.recuperarUsuarioJson(this);
+            if (ujson != null) {
+                UsuarioDTO yo = new Gson().fromJson(ujson, UsuarioDTO.class);
+                i.putExtra(ChatActivity.EXTRA_NOMBRE_USUARIO, yo.getNombreUsuario());
             }
-            i.putExtra(ChatActivity.EXTRA_NOMBRE_USUARIO, handle);
             startActivity(i);
         });
 
-        // obtenemos el ID
-        if (getIntent().hasExtra(EXTRA_ID_ARTISTA)) {
-            idArtista = getIntent().getIntExtra(EXTRA_ID_ARTISTA, -1);
-        }
-        if (idArtista == -1) {
-            Toast.makeText(this, "Artista no especificado", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        // llamamos a la API
-        bajarPerfilDesdeAPI(idArtista);
+        // 3) Bajamos el perfil desde la API
+        bajarPerfilDesdeAPI();
     }
 
-    private void bajarPerfilDesdeAPI(int id) {
+    private void bajarPerfilDesdeAPI() {
         String token  = Preferencias.obtenerToken(this);
         String bearer = token != null ? "Bearer " + token : "";
 
@@ -95,26 +94,22 @@ public class PerfilArtistaActivity extends BaseActivity {
                 .getClient(this)
                 .create(ServicioUsuario.class);
 
-        srv.obtenerPerfilArtista(bearer, id)
+        srv.obtenerPerfilArtista(bearer, idArtista)
                 .enqueue(new Callback<RespuestaCliente<BusquedaArtistaDTO>>() {
                     @Override
                     public void onResponse(Call<RespuestaCliente<BusquedaArtistaDTO>> call,
                                            Response<RespuestaCliente<BusquedaArtistaDTO>> resp) {
-                        if (resp.isSuccessful()
-                                && resp.body() != null
+                        if (resp.isSuccessful() && resp.body() != null
                                 && resp.body().getDatos() != null) {
-                            poblarUI(resp.body().getDatos());
+                            artista = resp.body().getDatos();
+                            poblarUI();
                         } else {
-                            // Loguea el código de estado y el body de error
+                            String err = "HTTP " + resp.code();
                             try {
-                                String errorBody = resp.errorBody() != null
-                                        ? resp.errorBody().string()
-                                        : "sin cuerpo de error";
-                                Log.e("PerfilArtista", "Código HTTP: " + resp.code()
-                                        + " — ErrorBody: " + errorBody);
-                            } catch (IOException e) {
-                                Log.e("PerfilArtista", "Error al leer errorBody", e);
-                            }
+                                if (resp.errorBody() != null)
+                                    err += " — " + resp.errorBody().string();
+                            } catch (IOException ignored) {}
+                            Log.e("PerfilArtista", err);
                             Toast.makeText(PerfilArtistaActivity.this,
                                     "Error al cargar perfil: " + resp.code(),
                                     Toast.LENGTH_LONG).show();
@@ -123,7 +118,7 @@ public class PerfilArtistaActivity extends BaseActivity {
                     @Override
                     public void onFailure(Call<RespuestaCliente<BusquedaArtistaDTO>> call,
                                           Throwable t) {
-                        Log.e("PerfilArtista", "Fallo de red al cargar perfil", t);
+                        Log.e("PerfilArtista", "Fallo de red", t);
                         Toast.makeText(PerfilArtistaActivity.this,
                                 "Fallo de red: " + t.getMessage(),
                                 Toast.LENGTH_LONG).show();
@@ -131,15 +126,15 @@ public class PerfilArtistaActivity extends BaseActivity {
                 });
     }
 
-    private void poblarUI(BusquedaArtistaDTO dto) {
-        // 1) Datos básicos
-        tvNombreArtista     .setText(dto.getNombre());
-        tvHandleArtista     .setText("@" + dto.getNombreUsuario());
-        tvDescripcionArtista.setText(dto.getDescripcion());
+    private void poblarUI() {
+        // datos básicos
+        tvNombreArtista     .setText(artista.getNombre());
+        tvHandleArtista     .setText("@" + artista.getNombreUsuario());
+        tvDescripcionArtista.setText(artista.getDescripcion());
 
-        // 2) Carga la imagen con Glide
+        // foto con Glide + header auth
         String token = Preferencias.obtenerToken(this);
-        String url   = ApiCliente.getUrlArchivos() + dto.getUrlFoto();
+        String url   = ApiCliente.getUrlArchivos() + artista.getUrlFoto();
         GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
                 .addHeader("Authorization", token != null ? "Bearer " + token : "")
                 .build());
@@ -148,37 +143,21 @@ public class PerfilArtistaActivity extends BaseActivity {
                 .placeholder(R.drawable.ic_launcher_background)
                 .into(ivFotoArtista);
 
-        // 3) Lógica para mostrar/ocultar el botón Evaluar
-
-        // Recupera el JSON del usuario y parsea con Gson
-        String usuarioJson = Preferencias.recuperarUsuarioJson(this);
-        UsuarioDTO yo = null;
-        if (usuarioJson != null) {
-            yo = new Gson().fromJson(usuarioJson, UsuarioDTO.class);
+        // botón “Evaluar” sólo si no eres tú
+        String ujson = Preferencias.recuperarUsuarioJson(this);
+        String actualHandle = "";
+        if (ujson != null) {
+            actualHandle = new Gson().fromJson(ujson, UsuarioDTO.class)
+                    .getNombreUsuario();
         }
-
-        // Comparar handles
-        String usuarioActual = yo != null ? yo.getNombreUsuario() : "";
-        if (!dto.getNombreUsuario().equals(usuarioActual)) {
+        if (!artista.getNombreUsuario().equals(actualHandle)) {
             btnEvaluar.setVisibility(View.VISIBLE);
             btnEvaluar.setOnClickListener(v ->
-                    mostrarDialogoEvaluacion(dto.getIdArtista())
+                    EvaluarArtistaDialog.newInstance(idArtista)
+                            .show(getSupportFragmentManager(),"eval_dialog")
             );
         } else {
             btnEvaluar.setVisibility(View.GONE);
         }
     }
-
-
-    // ④ Método stub para más adelante lanzar tu diálogo de evaluación
-    private void mostrarDialogoEvaluacion(int idArtista) {
-        EvaluarArtistaDialog
-                .newInstance(idArtista)
-                .show(getSupportFragmentManager(), "eval_dialog");
-    }
-    public void disableEvaluateButton() {
-        btnEvaluar.setEnabled(false);
-        btnEvaluar.setAlpha(0.3f);
-    }
-
 }

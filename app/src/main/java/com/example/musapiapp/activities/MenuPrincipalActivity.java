@@ -2,153 +2,261 @@ package com.example.musapiapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.example.musapiapp.R;
-import com.example.musapiapp.dto.BusquedaAlbumDTO;
-import com.example.musapiapp.dto.BusquedaArtistaDTO;
-import com.example.musapiapp.dto.ListaReproduccionDTO;
+import com.example.musapiapp.adapter.ContentAdapter;
+import com.example.musapiapp.dto.*;
+import com.example.musapiapp.model.ContentItem;
 import com.example.musapiapp.network.ApiCliente;
+import com.example.musapiapp.network.ServicioContenidoGuardado;
+import com.example.musapiapp.network.ServicioListasDeReproduccion;
+import com.example.musapiapp.util.Preferencias;
+import com.example.musapiapp.util.Reproductor;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MenuPrincipalActivity extends BaseActivity {
     public static final String EXTRA_QUERY = "extra_query";
 
-    private ImageButton btnCerrarSesion,
-            btnBuscar,
-            btnMenuAdmin,
-            btnPerfilUsuario,
-            btnCrearLista;
+    private ImageButton btnCerrarSesion, btnBuscar, btnMenuAdmin, btnPerfilUsuario, btnCrearLista;
     private EditText etBusqueda;
-    private LinearLayout llAlbumes, llListas, llArtistas;
+    private RecyclerView rvAlbumes, rvListas, rvArtistas;
+
+    private ContentAdapter adapterAlb, adapterLst, adapterArt;
+    private List<ContentItem> listAlb = new ArrayList<>();
+    private List<ContentItem> listLst = new ArrayList<>();
+    private List<ContentItem> listArt = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_principal);
 
+        // --- findViewById ---
         btnCerrarSesion  = findViewById(R.id.btn_cerrar_sesion);
         btnBuscar        = findViewById(R.id.btn_buscar);
         btnMenuAdmin     = findViewById(R.id.btn_menu_admin);
         btnPerfilUsuario = findViewById(R.id.btn_perfil_usuario);
         btnCrearLista    = findViewById(R.id.btn_crear_lista);
         etBusqueda       = findViewById(R.id.et_busqueda);
-        llAlbumes        = findViewById(R.id.ll_albumes);
-        llListas         = findViewById(R.id.ll_listas);
-        llArtistas       = findViewById(R.id.ll_artistas);
+        rvAlbumes        = findViewById(R.id.rvAlbumes);
+        rvListas         = findViewById(R.id.rvListas);
+        rvArtistas       = findViewById(R.id.rvArtistas);
 
+        // --- RecyclerViews horizontales ---
+        rvAlbumes.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
+        rvListas.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
+        rvArtistas.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+        );
+
+        adapterAlb = new ContentAdapter(listAlb, albListener);
+        adapterLst = new ContentAdapter(listLst, lstListener);
+        adapterArt = new ContentAdapter(listArt, artListener);
+
+        rvAlbumes.setAdapter(adapterAlb);
+        rvListas.setAdapter(adapterLst);
+        rvArtistas.setAdapter(adapterArt);
+
+        // --- Navegación ---
         btnCerrarSesion.setOnClickListener(v -> {
             startActivity(new Intent(this, InicioSesionActivity.class));
             finish();
         });
-
         btnBuscar.setOnClickListener(v -> {
-            String texto = etBusqueda.getText().toString().trim();
-            Intent intent = new Intent(this, BusquedaActivity.class);
-            intent.putExtra(EXTRA_QUERY, texto);
-            startActivity(intent);
+            String q = etBusqueda.getText().toString().trim();
+            startActivity(new Intent(this, BusquedaActivity.class)
+                    .putExtra(EXTRA_QUERY, q));
+        });
+        btnMenuAdmin.setOnClickListener(v ->
+                startActivity(new Intent(this, MenuAdminActivity.class))
+        );
+        btnPerfilUsuario.setOnClickListener(v ->
+                startActivity(new Intent(this, PerfilUsuarioActivity.class))
+        );
+        btnCrearLista.setOnClickListener(v ->
+                startActivity(new Intent(this, CrearListaDeReproduccionActivity.class))
+        );
+
+        // --- Carga contenido guardado de la API ---
+        cargarContenidoGuardado();
+    }
+
+    // Listener para álbumes
+    private final ContentAdapter.Listener albListener = new ContentAdapter.Listener() {
+        @Override public void onDetails(ContentItem item) {
+            BusquedaAlbumDTO a = (BusquedaAlbumDTO)item.getDto();
+            startActivity(new Intent(MenuPrincipalActivity.this, AlbumActivity.class)
+                    .putExtra(AlbumActivity.EXTRA_ALBUM, a));
+        }
+        @Override public void onPlay(ContentItem item) {
+            // TODO: reproducir álbum completo
+        }
+        @Override public void onSave(ContentItem item) { /* no aplica */ }
+    };
+
+    // Listener para listas
+    private final ContentAdapter.Listener lstListener = new ContentAdapter.Listener() {
+        @Override public void onDetails(ContentItem item) {
+            ListaReproduccionDTO l = (ListaReproduccionDTO)item.getDto();
+            startActivity(new Intent(MenuPrincipalActivity.this,
+                    ListaDeReproduccionActivity.class)
+                    .putExtra(ListaDeReproduccionActivity.EXTRA_LISTA, l));
+        }
+        @Override public void onPlay(ContentItem item) {
+            // 1) Obtiene DTO
+            ListaReproduccionDTO lista = (ListaReproduccionDTO)item.getDto();
+            // 2) Llama al servicio para sus canciones
+            ServicioListasDeReproduccion svc = ApiCliente
+                    .getClient(MenuPrincipalActivity.this)
+                    .create(ServicioListasDeReproduccion.class);
+
+            svc.getCancionesDeLista(lista.getIdListaDeReproduccion())
+                    .enqueue(new Callback<RespuestaCliente<List<BusquedaCancionDTO>>>() {
+                        @Override
+                        public void onResponse(Call<RespuestaCliente<List<BusquedaCancionDTO>>> call,
+                                               Response<RespuestaCliente<List<BusquedaCancionDTO>>> resp) {
+                            if (resp.isSuccessful() && resp.body()!=null) {
+                                List<BusquedaCancionDTO> canciones = resp.body().getDatos();
+                                // 3) Reproduce
+                                ArrayList<BusquedaCancionDTO> listaParaReproducir =
+                                        new ArrayList<>(canciones);
+                                Reproductor.reproducirCancion(
+                                        listaParaReproducir,
+                                        0,
+                                        MenuPrincipalActivity.this
+                                );
+                                startActivity(
+                                        new Intent(MenuPrincipalActivity.this, ReproductorActivity.class)
+                                );
+                            } else {
+                                Toast.makeText(MenuPrincipalActivity.this,
+                                        "No se pudieron cargar las canciones de la lista",
+                                        Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                        @Override
+                        public void onFailure(Call<RespuestaCliente<List<BusquedaCancionDTO>>> call, Throwable t) {
+                            Toast.makeText(MenuPrincipalActivity.this,
+                                    "Error de red: " + t.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+        }
+        @Override public void onSave(ContentItem item) { /* no aplica */ }
+    };
+
+    // Listener para artistas
+    private final ContentAdapter.Listener artListener = new ContentAdapter.Listener() {
+        @Override public void onDetails(ContentItem item) {
+            BusquedaArtistaDTO ar = (BusquedaArtistaDTO)item.getDto();
+            Intent i = new Intent(MenuPrincipalActivity.this, PerfilArtistaActivity.class);
+            i.putExtra(PerfilArtistaActivity.EXTRA_ID_ARTISTA,
+                    ar.getIdArtista());
+            startActivity(i);
+        }
+        @Override public void onPlay(ContentItem item) { /* no aplica */ }
+        @Override public void onSave(ContentItem item) {
+            int uid = Preferencias.obtenerIdUsuario(MenuPrincipalActivity.this);
+            BusquedaArtistaDTO ar = (BusquedaArtistaDTO)item.getDto();
+            ContenidoGuardadoDTO dto = new ContenidoGuardadoDTO(uid, "ARTISTA", ar.getIdArtista());
+            ApiCliente.getContenidoGuardadoService(MenuPrincipalActivity.this)
+                    .guardarContenido(dto)
+                    .enqueue(new Callback<RespuestaCliente<String>>() {
+                        @Override public void onResponse(Call<RespuestaCliente<String>> c,
+                                                         Response<RespuestaCliente<String>> r) {
+                            if (r.isSuccessful() && r.body()!=null) {
+                                Toast.makeText(MenuPrincipalActivity.this,
+                                        r.body().getMensaje(), Toast.LENGTH_SHORT).show();
+                                adapterArt.notifyDataSetChanged();
+                            }
+                        }
+                        @Override public void onFailure(Call<RespuestaCliente<String>> c, Throwable t) {
+                            Toast.makeText(MenuPrincipalActivity.this,
+                                    "Error al guardar artista: " + t.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+        }
+    };
+
+    private void cargarContenidoGuardado() {
+        int uid = Preferencias.obtenerIdUsuario(this);
+        if (uid < 0) {
+            Toast.makeText(this, "Usuario no identificado", Toast.LENGTH_LONG).show();
+            return;
+        }
+        ServicioContenidoGuardado svc = ApiCliente
+                .getClient(this)
+                .create(ServicioContenidoGuardado.class);
+
+        // Álbumes
+        svc.getAlbumesGuardados(uid).enqueue(new Callback<RespuestaCliente<List<BusquedaAlbumDTO>>>() {
+            @Override public void onResponse(Call<RespuestaCliente<List<BusquedaAlbumDTO>>> c,
+                                             Response<RespuestaCliente<List<BusquedaAlbumDTO>>> r) {
+                if (r.isSuccessful() && r.body()!=null) {
+                    listAlb.clear();
+                    for (BusquedaAlbumDTO a : r.body().getDatos()) {
+                        listAlb.add(new ContentItem(ContentItem.Type.ALBUM, a, false));
+                    }
+                    adapterAlb.notifyDataSetChanged();
+                }
+            }
+            @Override public void onFailure(Call<RespuestaCliente<List<BusquedaAlbumDTO>>> c, Throwable t) {
+                Toast.makeText(MenuPrincipalActivity.this,
+                        "Error al cargar álbumes: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
         });
 
-        btnMenuAdmin    .setOnClickListener(v -> startActivity(new Intent(this, MenuAdminActivity.class)));
-        btnPerfilUsuario.setOnClickListener(v -> startActivity(new Intent(this, PerfilUsuarioActivity.class)));
-        btnCrearLista   .setOnClickListener(v -> startActivity(new Intent(this, CrearListaDeReproduccionActivity.class)));
+        // Listas
+        svc.getListasGuardadas(uid).enqueue(new Callback<RespuestaCliente<List<ListaReproduccionDTO>>>() {
+            @Override public void onResponse(Call<RespuestaCliente<List<ListaReproduccionDTO>>> c,
+                                             Response<RespuestaCliente<List<ListaReproduccionDTO>>> r) {
+                if (r.isSuccessful() && r.body()!=null) {
+                    listLst.clear();
+                    for (ListaReproduccionDTO l : r.body().getDatos()) {
+                        listLst.add(new ContentItem(ContentItem.Type.LISTA, l, false));
+                    }
+                    adapterLst.notifyDataSetChanged();
+                }
+            }
+            @Override public void onFailure(Call<RespuestaCliente<List<ListaReproduccionDTO>>> c, Throwable t) {
+                Toast.makeText(MenuPrincipalActivity.this,
+                        "Error al cargar listas: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
 
-        // --- Datos de prueba: reemplazar por llamada real a la API ---
-        List<BusquedaAlbumDTO> albumes = Arrays.asList(
-                new BusquedaAlbumDTO(1, "Trench",       "Twenty One Pilots", "2021-04-16", "/fotos/trench.jpg",    null),
-                new BusquedaAlbumDTO(2, "Blurryface",   "Twenty One Pilots", "2015-05-12", "/fotos/blurryface.jpg", null)
-        );
-        List<ListaReproduccionDTO> listas = Arrays.asList(
-                new ListaReproduccionDTO("Favoritas", "Mis top tracks",            123, "/fotos/favoritas.jpg"),
-                new ListaReproduccionDTO("Reciente",  "Reproducciones recientes",   123, "/fotos/reciente.jpg")
-        );
-        List<BusquedaArtistaDTO> artistas = Arrays.asList(
-                new BusquedaArtistaDTO(1, "Muse",            "muse_oficial",   "Desc", "/fotos/muse.jpg",   null),
-                new BusquedaArtistaDTO(2, "Imagine Dragons", "imagine_dragons","Desc", "/fotos/id.jpg",     null)
-        );
-
-        // Inflar álbumes
-        for (BusquedaAlbumDTO alb : albumes) {
-            View item = LayoutInflater.from(this)
-                    .inflate(R.layout.item_contenido, llAlbumes, false);
-            ImageView    ivFoto   = item.findViewById(R.id.imgFoto);
-            TextView     tvNombre = item.findViewById(R.id.tvNombre);
-            TextView     tvAutor  = item.findViewById(R.id.tvAutor);
-            Button       btnSave  = item.findViewById(R.id.btnGuardar);
-            Button       btnDet   = item.findViewById(R.id.btnVerDetalles);
-            ImageButton  btnPlay  = item.findViewById(R.id.btnReproducir);
-
-            tvNombre.setText(alb.getNombreAlbum());
-            tvAutor .setText(alb.getNombreArtista());
-            btnSave .setVisibility(View.GONE);
-            Glide.with(this)
-                    .load(ApiCliente.getUrlArchivos() + alb.getUrlFoto())
-                    .into(ivFoto);
-
-            btnDet.setOnClickListener(v -> {
-                Intent i = new Intent(this, AlbumActivity.class);
-                i.putExtra(AlbumActivity.EXTRA_ALBUM, alb);
-                startActivity(i);
-            });
-            // TODO: btnPlay.setOnClickListener → reproducción
-
-            llAlbumes.addView(item);
-        }
-
-        // Inflar listas
-        for (ListaReproduccionDTO lst : listas) {
-            View item = LayoutInflater.from(this)
-                    .inflate(R.layout.item_contenido, llListas, false);
-            TextView    tvN = item.findViewById(R.id.tvNombre);
-            TextView    tvA = item.findViewById(R.id.tvAutor);
-            Button      bs  = item.findViewById(R.id.btnGuardar);
-            Button      bd  = item.findViewById(R.id.btnVerDetalles);
-            ImageButton bp  = item.findViewById(R.id.btnReproducir);
-
-            tvN.setText(lst.getNombre());
-            tvA.setVisibility(View.GONE);
-            bs .setVisibility(View.GONE);
-            bp .setVisibility(View.GONE);
-            // TODO: bd.setOnClickListener → próximas pantallas
-
-            llListas.addView(item);
-        }
-
-        // Inflar artistas
-        for (BusquedaArtistaDTO art : artistas) {
-            View item = LayoutInflater.from(this)
-                    .inflate(R.layout.item_contenido, llArtistas, false);
-            TextView    tvN  = item.findViewById(R.id.tvNombre);
-            TextView    tvA  = item.findViewById(R.id.tvAutor);
-            Button      bs   = item.findViewById(R.id.btnGuardar);
-            ImageButton bp   = item.findViewById(R.id.btnReproducir);
-            ImageView   iv   = item.findViewById(R.id.imgFoto);
-
-            tvN .setText(art.getNombre());
-            tvA .setText("@" + art.getNombreUsuario());
-            bs  .setText(R.string.seguir);
-            bp  .setVisibility(View.GONE);
-            Glide.with(this)
-                    .load(ApiCliente.getUrlArchivos() + art.getUrlFoto())
-                    .into(iv);
-
-
-            bs.setOnClickListener(v -> {
-                // TODO: lógica de seguir
-            });
-            llArtistas.addView(item);
-        }
+        // Artistas
+        svc.getArtistasGuardados(uid).enqueue(new Callback<RespuestaCliente<List<BusquedaArtistaDTO>>>() {
+            @Override public void onResponse(Call<RespuestaCliente<List<BusquedaArtistaDTO>>> c,
+                                             Response<RespuestaCliente<List<BusquedaArtistaDTO>>> r) {
+                if (r.isSuccessful() && r.body()!=null) {
+                    listArt.clear();
+                    for (BusquedaArtistaDTO ar : r.body().getDatos()) {
+                        listArt.add(new ContentItem(ContentItem.Type.ARTISTA, ar, true));
+                    }
+                    adapterArt.notifyDataSetChanged();
+                }
+            }
+            @Override public void onFailure(Call<RespuestaCliente<List<BusquedaArtistaDTO>>> c, Throwable t) {
+                Toast.makeText(MenuPrincipalActivity.this,
+                        "Error al cargar artistas: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
