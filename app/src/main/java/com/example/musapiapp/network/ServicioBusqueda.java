@@ -4,6 +4,7 @@ package com.example.musapiapp.network;
 import com.example.musapiapp.dto.BusquedaAlbumDTO;
 import com.example.musapiapp.dto.BusquedaArtistaDTO;
 import com.example.musapiapp.dto.BusquedaCancionDTO;
+import com.example.musapiapp.dto.CategoriaMusicalDTO;
 import com.example.musapiapp.dto.RespuestaCliente;
 
 import java.util.List;
@@ -21,4 +22,7 @@ public interface ServicioBusqueda {
 
     @GET("albumes/buscar")
     Call<RespuestaCliente<List<BusquedaAlbumDTO>>> buscarAlbumes(@Query("texto") String texto);
+
+    @GET("categoriasMusicales")
+    Call<RespuestaCliente<List<CategoriaMusicalDTO>>> obtenerCategorias();
 }
