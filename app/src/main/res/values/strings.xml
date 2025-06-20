@@ -57,6 +57,7 @@
     <string name="perfil_artista_titulo">Perfil artista</string>
     <string name="nombre_label">Nombre</string>
     <string name="usuario_label">Usuario</string>
+    <string name="desc_evaluar_artista">Evaluar artista</string>
 
     <!-- editar perfil -->
     <string name="editar_perfil_titulo">Editar perfil</string>

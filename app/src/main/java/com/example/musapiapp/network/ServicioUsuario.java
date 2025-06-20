@@ -3,6 +3,7 @@ package com.example.musapiapp.network;
 
 import com.example.musapiapp.dto.BusquedaArtistaDTO;
 import com.example.musapiapp.dto.EdicionPerfilDTO;
+import com.example.musapiapp.dto.EvaluacionDTO;
 import com.example.musapiapp.dto.RespuestaCliente;
 import com.example.musapiapp.dto.SolicitudInicioSesion;
 import com.example.musapiapp.dto.UsuarioDTO;
@@ -61,5 +62,4 @@ public interface ServicioUsuario {
             @Header("Authorization") String bearerToken,
             @Path("id") int idArtista
     );
-
 }

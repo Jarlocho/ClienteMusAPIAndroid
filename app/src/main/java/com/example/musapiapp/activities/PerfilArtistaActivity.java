@@ -2,6 +2,7 @@ package com.example.musapiapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -13,13 +14,17 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.model.GlideUrl;
 import com.bumptech.glide.load.model.LazyHeaders;
 import com.example.musapiapp.R;
+import com.example.musapiapp.dialogs.EvaluarArtistaDialog;
 import com.example.musapiapp.dto.BusquedaArtistaDTO;
 import com.example.musapiapp.dto.RespuestaCliente;
 import com.example.musapiapp.dto.UsuarioDTO;
 import com.example.musapiapp.network.ApiCliente;
 import com.example.musapiapp.network.ServicioUsuario;
 import com.example.musapiapp.util.Preferencias;
+import android.view.View;
 import com.google.gson.Gson;
+
+import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,11 +33,12 @@ import retrofit2.Response;
 public class PerfilArtistaActivity extends BaseActivity {
     public static final String EXTRA_ID_ARTISTA = "EXTRA_ID_ARTISTA";
 
-    private ImageButton btnVolver,btnChat;
+    private ImageButton btnVolver,btnChat,btnEvaluar;
     private ImageView   ivFotoArtista;
     private TextView    tvNombreArtista,
             tvHandleArtista,
             tvDescripcionArtista;
+
 
     private int idArtista = -1;
 
@@ -47,6 +53,7 @@ public class PerfilArtistaActivity extends BaseActivity {
         tvNombreArtista      = findViewById(R.id.tvNombreArtista);
         tvHandleArtista      = findViewById(R.id.tvHandleArtista);
         tvDescripcionArtista = findViewById(R.id.tvDescripcionArtista);
+        btnEvaluar = findViewById(R.id.btnEvaluar);
 
         btnVolver.setOnClickListener(v -> finish());
 
@@ -98,36 +105,80 @@ public class PerfilArtistaActivity extends BaseActivity {
                                 && resp.body().getDatos() != null) {
                             poblarUI(resp.body().getDatos());
                         } else {
+                            // Loguea el código de estado y el body de error
+                            try {
+                                String errorBody = resp.errorBody() != null
+                                        ? resp.errorBody().string()
+                                        : "sin cuerpo de error";
+                                Log.e("PerfilArtista", "Código HTTP: " + resp.code()
+                                        + " — ErrorBody: " + errorBody);
+                            } catch (IOException e) {
+                                Log.e("PerfilArtista", "Error al leer errorBody", e);
+                            }
                             Toast.makeText(PerfilArtistaActivity.this,
-                                    "Error al cargar perfil",
-                                    Toast.LENGTH_SHORT).show();
+                                    "Error al cargar perfil: " + resp.code(),
+                                    Toast.LENGTH_LONG).show();
                         }
                     }
                     @Override
                     public void onFailure(Call<RespuestaCliente<BusquedaArtistaDTO>> call,
                                           Throwable t) {
+                        Log.e("PerfilArtista", "Fallo de red al cargar perfil", t);
                         Toast.makeText(PerfilArtistaActivity.this,
-                                "Error de red: " + t.getMessage(),
-                                Toast.LENGTH_SHORT).show();
+                                "Fallo de red: " + t.getMessage(),
+                                Toast.LENGTH_LONG).show();
                     }
                 });
     }
 
     private void poblarUI(BusquedaArtistaDTO dto) {
+        // 1) Datos básicos
         tvNombreArtista     .setText(dto.getNombre());
         tvHandleArtista     .setText("@" + dto.getNombreUsuario());
         tvDescripcionArtista.setText(dto.getDescripcion());
 
+        // 2) Carga la imagen con Glide
         String token = Preferencias.obtenerToken(this);
         String url   = ApiCliente.getUrlArchivos() + dto.getUrlFoto();
-
         GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
                 .addHeader("Authorization", token != null ? "Bearer " + token : "")
                 .build());
-
         Glide.with(this)
                 .load(glideUrl)
                 .placeholder(R.drawable.ic_launcher_background)
                 .into(ivFotoArtista);
+
+        // 3) Lógica para mostrar/ocultar el botón Evaluar
+
+        // Recupera el JSON del usuario y parsea con Gson
+        String usuarioJson = Preferencias.recuperarUsuarioJson(this);
+        UsuarioDTO yo = null;
+        if (usuarioJson != null) {
+            yo = new Gson().fromJson(usuarioJson, UsuarioDTO.class);
+        }
+
+        // Comparar handles
+        String usuarioActual = yo != null ? yo.getNombreUsuario() : "";
+        if (!dto.getNombreUsuario().equals(usuarioActual)) {
+            btnEvaluar.setVisibility(View.VISIBLE);
+            btnEvaluar.setOnClickListener(v ->
+                    mostrarDialogoEvaluacion(dto.getIdArtista())
+            );
+        } else {
+            btnEvaluar.setVisibility(View.GONE);
+        }
     }
+
+
+    // ④ Método stub para más adelante lanzar tu diálogo de evaluación
+    private void mostrarDialogoEvaluacion(int idArtista) {
+        EvaluarArtistaDialog
+                .newInstance(idArtista)
+                .show(getSupportFragmentManager(), "eval_dialog");
+    }
+    public void disableEvaluateButton() {
+        btnEvaluar.setEnabled(false);
+        btnEvaluar.setAlpha(0.3f);
+    }
+
 }
