@@ -60,7 +60,7 @@ public class BusquedaActivity extends BaseActivity {
 
         // --- RecyclerView + Adapter ---
         rvResultados.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ContentAdapter(items, new ContentAdapter.Listener() {
+        adapter = new ContentAdapter(items, BusquedaActivity.this, new ContentAdapter.Listener() {
             @Override
             public void onDetails(ContentItem item) {
                 switch (item.getType()) {

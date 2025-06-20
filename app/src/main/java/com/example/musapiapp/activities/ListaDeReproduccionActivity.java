@@ -65,7 +65,7 @@ public class ListaDeReproduccionActivity extends BaseActivity {
         rvCanciones.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         );
-        adapter = new ContentAdapter(items, new ContentAdapter.Listener() {
+        adapter = new ContentAdapter(items, ListaDeReproduccionActivity.this, new ContentAdapter.Listener() {
             @Override
             public void onDetails(ContentItem item) {
                 BusquedaCancionDTO c = (BusquedaCancionDTO)item.getDto();

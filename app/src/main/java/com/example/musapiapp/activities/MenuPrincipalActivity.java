@@ -65,9 +65,9 @@ public class MenuPrincipalActivity extends BaseActivity {
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         );
 
-        adapterAlb = new ContentAdapter(listAlb, albListener);
-        adapterLst = new ContentAdapter(listLst, lstListener);
-        adapterArt = new ContentAdapter(listArt, artListener);
+        adapterAlb = new ContentAdapter(listAlb, this, albListener);
+        adapterLst = new ContentAdapter(listLst, this, lstListener);
+        adapterArt = new ContentAdapter(listArt, this, artListener);
 
         rvAlbumes.setAdapter(adapterAlb);
         rvListas.setAdapter(adapterLst);

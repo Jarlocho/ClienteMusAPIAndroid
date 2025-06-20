@@ -1,5 +1,6 @@
 package com.example.musapiapp.adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,10 +8,16 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.model.GlideUrl;
+import com.bumptech.glide.load.model.LazyHeaders;
 import com.example.musapiapp.R;
+import com.example.musapiapp.activities.BusquedaActivity;
 import com.example.musapiapp.model.ContentItem;
 import com.example.musapiapp.network.ApiCliente;
 import com.example.musapiapp.dto.*;
+import com.example.musapiapp.util.Constantes;
+import com.example.musapiapp.util.Preferencias;
+
 import java.util.List;
 
 public class ContentAdapter
@@ -24,10 +31,12 @@ public class ContentAdapter
 
     private List<ContentItem> items;
     private Listener listener;
+    private Context ctx;
 
-    public ContentAdapter(List<ContentItem> items, Listener listener) {
+    public ContentAdapter(List<ContentItem> items, Context ctx, Listener listener) {
         this.items = items;
         this.listener = listener;
+        this.ctx = ctx;
     }
 
     @NonNull @Override
@@ -58,26 +67,20 @@ public class ContentAdapter
                 BusquedaCancionDTO c = (BusquedaCancionDTO) it.getDto();
                 h.tvNombre.setText(c.getNombre());
                 h.tvAutor.setText(c.getNombreArtista());
-                Glide.with(h.itemView.getContext())
-                        .load(ApiCliente.getUrlArchivos() + c.getUrlFoto())
-                        .into(h.imgFoto);
+                cargarImagen(c.getUrlFoto(), h.imgFoto);
                 break;
             case ARTISTA:
                 BusquedaArtistaDTO ar = (BusquedaArtistaDTO) it.getDto();
                 h.tvNombre.setText(ar.getNombre());
                 h.tvAutor.setText("@"+ar.getNombreUsuario());
-                Glide.with(h.itemView.getContext())
-                        .load(ApiCliente.getUrlArchivos() + ar.getUrlFoto())
-                        .into(h.imgFoto);
+                cargarImagen(ar.getUrlFoto(), h.imgFoto);
                 break;
             case LISTA:
                 ListaReproduccionDTO l = (ListaReproduccionDTO) it.getDto();
                 h.tvNombre.setText(l.getNombre());
                 h.tvAutor.setVisibility(View.GONE);
                 h.btnReproducir.setVisibility(View.GONE);
-                Glide.with(h.itemView.getContext())
-                        .load(ApiCliente.getUrlArchivos() + l.getFotoPath())
-                        .into(h.imgFoto);
+                cargarImagen(l.getFotoPath(), h.imgFoto);
                 break;
         }
 
@@ -87,6 +90,24 @@ public class ContentAdapter
             listener.onSave(it);
             h.btnGuardar.setVisibility(View.GONE);
         });
+    }
+
+    private void cargarImagen(String url, ImageView destino) {
+        if (url == null || url.isEmpty()) return;
+
+        String token = Preferencias.obtenerToken(ctx); // O contexto si estás fuera de actividad
+        String bearer = token != null ? "Bearer " + token : "";
+
+        GlideUrl glideUrl = new GlideUrl(
+                Constantes.URL_BASE + url,
+                new LazyHeaders.Builder()
+                        .addHeader("Authorization", bearer)
+                        .build()
+        );
+
+        Glide.with(ctx)
+                .load(glideUrl)
+                .into(destino);
     }
 
     @Override public int getItemCount() { return items.size(); }

@@ -105,7 +105,7 @@ public class PerfilUsuarioActivity extends BaseActivity {
         rvListasUsuario.setLayoutManager(
                 new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         );
-        adapter = new ContentAdapter(items, new ContentAdapter.Listener() {
+        adapter = new ContentAdapter(items, this, new ContentAdapter.Listener() {
             @Override
             public void onDetails(ContentItem item) {
                 ListaReproduccionDTO lst = (ListaReproduccionDTO) item.getDto();
