@@ -1,23 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/white"
+    tools:context=".activities.PerfilUsuarioActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
+        android:id="@+id/svPerfil"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:padding="16dp"
+        android:layout_above="@+id/barraReproductor">
 
-        <!-- Cabecera -->
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="24dp">
+            android:layout_height="wrap_content">
 
-            <!-- Volver + usuario -->
+            <!-- Cabecera (volver + datos usuario) -->
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
@@ -45,8 +45,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ellipsize="end"
-                        android:maxLines="1"
-                        android:text="@string/placeholder_user_name"/>
+                        android:maxLines="1"/>
 
                     <TextView
                         android:id="@+id/tv_usuario"
@@ -55,12 +54,11 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
                         android:ellipsize="end"
-                        android:maxLines="1"
-                        android:text="@string/placeholder_user_handle"/>
+                        android:maxLines="1"/>
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Botones de acción en scroll horizontal -->
+            <!-- Botones de acción -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -74,7 +72,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical">
-                    <!-- divider opcional aquí -->
 
                     <Button
                         android:id="@+id/btn_crear_perfil_artista"
@@ -111,21 +108,53 @@
                         android:text="@string/btn_editar_perfil"/>
                 </LinearLayout>
             </HorizontalScrollView>
+
+            <!-- Título de la sección de listas -->
+            <TextView
+                android:id="@+id/tv_listas_titulo"
+                style="@style/TextAppearance.MaterialComponents.Subtitle1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/profile_listas_title"/>
+
+            <!-- RecyclerView PARA LISTAS -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvListasUsuario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:overScrollMode="never"
+                tools:listitem="@layout/item_contenido"/>
+
         </LinearLayout>
+    </ScrollView>
 
-        <!-- Listas de reproducción -->
+    <!-- Barra de reproductor fija -->
+    <LinearLayout
+        android:id="@+id/barraReproductor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="#EEEEEE"
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
         <TextView
-            android:id="@+id/tv_listas_titulo"
-            style="@style/TextAppearance.MaterialComponents.Subtitle1"
-            android:layout_width="match_parent"
+            android:id="@+id/txtMiniTitulo"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:text="@string/profile_listas_title"
-            android:layout_marginBottom="8dp"/>
+            android:text="Canción actual"
+            android:textStyle="bold"/>
 
-        <LinearLayout
-            android:id="@+id/ll_listas"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+        <ImageButton
+            android:id="@+id/btnMiniPlayPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_play"
+            android:background="@android:color/transparent"/>
     </LinearLayout>
-</ScrollView>
+</RelativeLayout>

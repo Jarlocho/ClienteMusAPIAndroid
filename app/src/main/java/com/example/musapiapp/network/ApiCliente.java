@@ -73,4 +73,12 @@ public class ApiCliente {
         }
         return retrofit;
     }
+    public static ServicioContenidoGuardado getContenidoGuardadoService(Context context) {
+        return getClient(context).create(ServicioContenidoGuardado.class);
+    }
+    public static ServicioListasDeReproduccion getListasDeReproduccionService(Context context) {
+        return getClient(context).create(ServicioListasDeReproduccion.class);
+    }
+
+
 }

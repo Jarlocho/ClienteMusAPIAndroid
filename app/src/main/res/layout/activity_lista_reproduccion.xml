@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@android:color/white">
+
+    <!-- Header: volver + título -->
+    <LinearLayout
+        android:id="@+id/header"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <ImageButton
+            android:id="@+id/btn_volver_lista"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@android:drawable/ic_media_previous"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/desc_volver"/>
+
+        <TextView
+            android:id="@+id/tvListaNombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre de la lista"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginStart="12dp"/>
+    </LinearLayout>
+
+    <!-- RecyclerView de canciones -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCancionesLista"
+        android:layout_below="@id/header"
+        android:layout_above="@+id/barraReproductor"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        tools:listitem="@layout/item_contenido"/>
+
+    <!-- Barra de reproductor fija (heredada por BaseActivity) -->
+    <LinearLayout
+        android:id="@+id/barraReproductor"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#EEEEEE"
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/txtMiniTitulo"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Canción actual"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnMiniPlayPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_play"
+            android:background="@android:color/transparent" />
+    </LinearLayout>
+</RelativeLayout>
