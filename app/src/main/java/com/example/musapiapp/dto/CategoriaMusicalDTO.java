@@ -37,6 +37,10 @@ public class CategoriaMusicalDTO {
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
+    @Override
+    public String toString() {
+        return this.getNombre();  // o el campo que almacene el nombre
+    }
 
 
 }

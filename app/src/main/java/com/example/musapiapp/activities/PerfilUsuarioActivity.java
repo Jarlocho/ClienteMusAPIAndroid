@@ -46,8 +46,12 @@ public class PerfilUsuarioActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("PerfilUsuario", "onCreate: antes de setContentView");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil_usuario);
+        Log.d("PerfilUsuario", "onCreate: después de setContentView");
+
 
         // --- findViewById ---
         btnVolver             = findViewById(R.id.btn_volver);

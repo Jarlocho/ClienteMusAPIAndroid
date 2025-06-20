@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 public class UsuarioDTO implements Serializable {
     private int idUsuario;
+    private Integer idPerfilArtista;  // nullable
+
     private String correo;
     private String pais;
     private String nombre;
@@ -29,4 +31,8 @@ public class UsuarioDTO implements Serializable {
     }
 
     public void setEsArtista(boolean esArtista) {this.esArtista = true; }
+    public Integer getIdPerfilArtista() { return idPerfilArtista; }
+    public void setIdPerfilArtista(Integer idPerfilArtista) {
+        this.idPerfilArtista = idPerfilArtista;
+    }
 }

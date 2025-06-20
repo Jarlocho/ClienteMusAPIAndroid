@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Nombre de la canción -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre de la canción"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+        <EditText
+            android:id="@+id/etNombreCancion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ingresa el nombre" />
+
+        <!-- Categoría -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Categoría musical"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+        <Spinner
+            android:id="@+id/spCategoria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:spinnerMode="dropdown" />
+
+
+        <!-- Portada -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Portada (imagen)"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+        <ImageView
+            android:id="@+id/ivPortada"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_placeholder_image" />
+        <Button
+            android:id="@+id/btnSeleccionarFoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Seleccionar foto"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp" />
+
+        <!-- Archivo de audio -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Archivo de audio"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+        <TextView
+            android:id="@+id/tvArchivoSeleccionado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ningún archivo seleccionado"
+            android:background="@android:drawable/edit_text"
+            android:padding="8dp" />
+        <Button
+            android:id="@+id/btnSeleccionarAudio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Seleccionar audio"
+            android:layout_marginTop="8dp" />
+
+        <!-- Duración -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Duración"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp" />
+        <TextView
+            android:id="@+id/tvDuracion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:padding="8dp"
+            android:background="@android:drawable/edit_text" />
+
+        <!-- Botón Confirmar -->
+        <Button
+            android:id="@+id/btnConfirmar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subir canción"
+            android:layout_marginTop="24dp" />
+
+    </LinearLayout>
+</ScrollView>

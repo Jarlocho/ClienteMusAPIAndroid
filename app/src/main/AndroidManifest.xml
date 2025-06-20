@@ -160,6 +160,24 @@
                 android:value=".activities.MenuAdminActivity"/>
         </activity>
 
+        <!-- Subir contenido (sencillo) -->
+        <activity
+            android:name=".activities.SubirContenidoActivity"
+            android:parentActivityName=".activities.PerfilArtistaActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.PerfilArtistaActivity" />
+        </activity>
+
+        <!-- Subir canción -->
+        <activity
+            android:name=".activities.SubirCancionActivity"
+            android:parentActivityName=".activities.SubirContenidoActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activities.SubirContenidoActivity" />
+        </activity>
+
     </application>
 
 </manifest>

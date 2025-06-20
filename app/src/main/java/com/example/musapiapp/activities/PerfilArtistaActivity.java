@@ -1,11 +1,9 @@
-// src/main/java/com/example/musapiapp/activities/PerfilArtistaActivity.java
 package com.example.musapiapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -39,23 +37,14 @@ public class PerfilArtistaActivity extends AppCompatActivity {
     private int idArtista;
     private BusquedaArtistaDTO artista;
 
-    private ImageButton btnVolver, btnChat, btnEvaluar, btnCrearAlbum;
+    private ImageButton btnVolver, btnChat, btnEvaluar, btnCrearAlbum, btnSubirContenido;
     private ImageView   ivFotoArtista;
     private TextView    tvNombreArtista, tvHandleArtista, tvDescripcionArtista;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil_artista);
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            int recibido = extras.getInt(EXTRA_ID_ARTISTA, -999);
-            Log.d("PerfilArtista", "onCreate recibió EXTRA_ID_ARTISTA=" + recibido);
-        } else {
-            Log.d("PerfilArtista", "onCreate recibió extras=null");
-        }
-
 
         // 1) Leer siempre el ID que viene por EXTRA_ID_ARTISTA
         if (!getIntent().hasExtra(EXTRA_ID_ARTISTA)) {
@@ -63,6 +52,7 @@ public class PerfilArtistaActivity extends AppCompatActivity {
             finish();
             return;
         }
+
         idArtista = getIntent().getIntExtra(EXTRA_ID_ARTISTA, -1);
         if (idArtista < 0) {
             Toast.makeText(this, "Artista no especificado", Toast.LENGTH_SHORT).show();
@@ -78,12 +68,13 @@ public class PerfilArtistaActivity extends AppCompatActivity {
         tvHandleArtista      = findViewById(R.id.tvHandleArtista);
         tvDescripcionArtista = findViewById(R.id.tvDescripcionArtista);
         btnEvaluar           = findViewById(R.id.btnEvaluar);
+        btnCrearAlbum        = findViewById(R.id.btnCrearAlbum);
+        btnSubirContenido    = findViewById(R.id.btnSubirContenido);
 
         btnVolver.setOnClickListener(v -> finish());
         btnChat.setOnClickListener(v -> {
             Intent i = new Intent(this, ChatActivity.class);
             i.putExtra(ChatActivity.EXTRA_ID_ARTISTA, idArtista);
-            // aquí no cambió
             String ujson = Preferencias.recuperarUsuarioJson(this);
             if (ujson != null) {
                 UsuarioDTO yo = new Gson().fromJson(ujson, UsuarioDTO.class);
@@ -116,7 +107,6 @@ public class PerfilArtistaActivity extends AppCompatActivity {
                             artista = resp.body().getDatos();
                             poblarUI();
                         } else {
-                            // ↓ Aquí extraemos el cuerpo de error para depurar
                             String body = "";
                             try {
                                 if (resp.errorBody() != null) {
@@ -145,7 +135,6 @@ public class PerfilArtistaActivity extends AppCompatActivity {
                     }
                 });
     }
-
 
     private void poblarUI() {
         // 1) Datos básicos
@@ -177,20 +166,23 @@ public class PerfilArtistaActivity extends AppCompatActivity {
                     EvaluarArtistaDialog.newInstance(idArtista)
                             .show(getSupportFragmentManager(),"eval_dialog")
             );
+            btnCrearAlbum.setVisibility(View.GONE);
+            btnSubirContenido.setVisibility(View.GONE);
         } else {
+            // Eres tú: mostrar crear álbum y subir contenido
             btnEvaluar.setVisibility(View.GONE);
-        }
-
-        // 4) Botón “Crear álbum” sólo si eres tú
-        btnCrearAlbum = findViewById(R.id.btnCrearAlbum);
-        if (artista.getNombreUsuario().equals(actualHandle)) {
             btnCrearAlbum.setVisibility(View.VISIBLE);
             btnCrearAlbum.setOnClickListener(v -> {
                 Intent i = new Intent(this, CrearAlbumActivity.class);
                 startActivity(i);
             });
-        } else {
-            btnCrearAlbum.setVisibility(View.GONE);
+
+            btnSubirContenido.setVisibility(View.VISIBLE);
+            btnSubirContenido.setOnClickListener(v -> {
+                Intent i = new Intent(this, SubirContenidoActivity.class);
+                i.putExtra(EXTRA_ID_ARTISTA, artista.getIdArtista());
+                startActivity(i);
+            });
         }
     }
 }

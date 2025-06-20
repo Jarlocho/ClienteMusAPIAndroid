@@ -6,7 +6,6 @@ import java.util.List;
 
 public class BusquedaArtistaDTO implements Serializable {
     private int idArtista;
-    private int idUsuario;
     private String nombre;
     private String nombreUsuario;
     private String descripcion;
@@ -49,9 +48,6 @@ public class BusquedaArtistaDTO implements Serializable {
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
     }
-
-    public int getIdUsuario() { return idUsuario; }
-    public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
 
     public String getDescripcion() {
         return descripcion;
