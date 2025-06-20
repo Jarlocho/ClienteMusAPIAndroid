@@ -96,4 +96,7 @@
     <!-- Descripción para el botón de Chat -->
     <string name="desc_chat">Abrir chat con el artista</string>
 
+    <string name="categorias_musicales">Categorias musicales:</string>
+    <string name="registrar_categoria_musical">Registrar categoria musical</string>
+
 </resources>
