@@ -137,6 +137,17 @@
                 android:src="@drawable/selector_evaluar_artista"
                 android:contentDescription="@string/desc_evaluar_artista"
                 app:tint="?android:attr/textColorPrimary" />
+            <ImageButton
+                android:id="@+id/btnCrearAlbum"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_create_album"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/desc_crear_album"
+                android:visibility="gone"
+                android:layout_marginTop="16dp"
+                app:tint="?attr/colorOnBackground" />
+
         </LinearLayout>
     </ScrollView>
 

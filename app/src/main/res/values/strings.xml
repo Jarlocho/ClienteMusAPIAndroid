@@ -58,7 +58,7 @@
     <string name="nombre_label">Nombre</string>
     <string name="usuario_label">Usuario</string>
     <string name="desc_evaluar_artista">Evaluar artista</string>
-
+    <string name="desc_crear_album">Crear álbum</string>
     <!-- editar perfil -->
     <string name="editar_perfil_titulo">Editar perfil</string>
     <string name="subir_foto">Subir foto</string>

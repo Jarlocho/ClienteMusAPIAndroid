@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -38,14 +39,23 @@ public class PerfilArtistaActivity extends AppCompatActivity {
     private int idArtista;
     private BusquedaArtistaDTO artista;
 
-    private ImageButton btnVolver, btnChat, btnEvaluar;
+    private ImageButton btnVolver, btnChat, btnEvaluar, btnCrearAlbum;
     private ImageView   ivFotoArtista;
     private TextView    tvNombreArtista, tvHandleArtista, tvDescripcionArtista;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_perfil_artista);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            int recibido = extras.getInt(EXTRA_ID_ARTISTA, -999);
+            Log.d("PerfilArtista", "onCreate recibió EXTRA_ID_ARTISTA=" + recibido);
+        } else {
+            Log.d("PerfilArtista", "onCreate recibió extras=null");
+        }
+
 
         // 1) Leer siempre el ID que viene por EXTRA_ID_ARTISTA
         if (!getIntent().hasExtra(EXTRA_ID_ARTISTA)) {
@@ -89,6 +99,7 @@ public class PerfilArtistaActivity extends AppCompatActivity {
     private void bajarPerfilDesdeAPI() {
         String token  = Preferencias.obtenerToken(this);
         String bearer = token != null ? "Bearer " + token : "";
+        Log.d("PerfilArtista", "Authorization header: [" + bearer + "]");
 
         ServicioUsuario srv = ApiCliente
                 .getClient(this)
@@ -99,40 +110,50 @@ public class PerfilArtistaActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<RespuestaCliente<BusquedaArtistaDTO>> call,
                                            Response<RespuestaCliente<BusquedaArtistaDTO>> resp) {
-                        if (resp.isSuccessful() && resp.body() != null
+                        if (resp.isSuccessful()
+                                && resp.body() != null
                                 && resp.body().getDatos() != null) {
                             artista = resp.body().getDatos();
                             poblarUI();
                         } else {
-                            String err = "HTTP " + resp.code();
+                            // ↓ Aquí extraemos el cuerpo de error para depurar
+                            String body = "";
                             try {
-                                if (resp.errorBody() != null)
-                                    err += " — " + resp.errorBody().string();
-                            } catch (IOException ignored) {}
-                            Log.e("PerfilArtista", err);
-                            Toast.makeText(PerfilArtistaActivity.this,
-                                    "Error al cargar perfil: " + resp.code(),
-                                    Toast.LENGTH_LONG).show();
+                                if (resp.errorBody() != null) {
+                                    body = resp.errorBody().string();
+                                }
+                            } catch (IOException ignored) { }
+                            Log.e("PerfilArtista",
+                                    "Código " + resp.code() + " — " + body);
+                            Toast.makeText(
+                                    PerfilArtistaActivity.this,
+                                    "Error al cargar perfil: HTTP " + resp.code(),
+                                    Toast.LENGTH_LONG
+                            ).show();
                         }
                     }
+
                     @Override
                     public void onFailure(Call<RespuestaCliente<BusquedaArtistaDTO>> call,
                                           Throwable t) {
-                        Log.e("PerfilArtista", "Fallo de red", t);
-                        Toast.makeText(PerfilArtistaActivity.this,
+                        Log.e("PerfilArtista", "Fallo red", t);
+                        Toast.makeText(
+                                PerfilArtistaActivity.this,
                                 "Fallo de red: " + t.getMessage(),
-                                Toast.LENGTH_LONG).show();
+                                Toast.LENGTH_LONG
+                        ).show();
                     }
                 });
     }
 
+
     private void poblarUI() {
-        // datos básicos
+        // 1) Datos básicos
         tvNombreArtista     .setText(artista.getNombre());
         tvHandleArtista     .setText("@" + artista.getNombreUsuario());
         tvDescripcionArtista.setText(artista.getDescripcion());
 
-        // foto con Glide + header auth
+        // 2) Foto con Glide + header auth
         String token = Preferencias.obtenerToken(this);
         String url   = ApiCliente.getUrlArchivos() + artista.getUrlFoto();
         GlideUrl glideUrl = new GlideUrl(url, new LazyHeaders.Builder()
@@ -143,7 +164,7 @@ public class PerfilArtistaActivity extends AppCompatActivity {
                 .placeholder(R.drawable.ic_launcher_background)
                 .into(ivFotoArtista);
 
-        // botón “Evaluar” sólo si no eres tú
+        // 3) Botón “Evaluar” sólo si no eres tú
         String ujson = Preferencias.recuperarUsuarioJson(this);
         String actualHandle = "";
         if (ujson != null) {
@@ -158,6 +179,18 @@ public class PerfilArtistaActivity extends AppCompatActivity {
             );
         } else {
             btnEvaluar.setVisibility(View.GONE);
+        }
+
+        // 4) Botón “Crear álbum” sólo si eres tú
+        btnCrearAlbum = findViewById(R.id.btnCrearAlbum);
+        if (artista.getNombreUsuario().equals(actualHandle)) {
+            btnCrearAlbum.setVisibility(View.VISIBLE);
+            btnCrearAlbum.setOnClickListener(v -> {
+                Intent i = new Intent(this, CrearAlbumActivity.class);
+                startActivity(i);
+            });
+        } else {
+            btnCrearAlbum.setVisibility(View.GONE);
         }
     }
 }

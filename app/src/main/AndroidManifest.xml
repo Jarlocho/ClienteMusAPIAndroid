@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MusAPIApp"
         tools:targetApi="31"
-        android:usesCleartextTraffic="true">  <!-- Permite HTTP -->
+        android:usesCleartextTraffic="true">
 
         <!-- Punto de entrada -->
         <activity
@@ -112,14 +112,16 @@
                 android:value=".activities.PerfilUsuarioActivity"/>
         </activity>
 
-        <!-- Crear álbum y listas -->
+        <!-- —— NUEVA ACTIVIDAD: Crear Álbum —— -->
         <activity
             android:name=".activities.CrearAlbumActivity"
-            android:parentActivityName=".activities.MenuPrincipalActivity">
+            android:parentActivityName=".activities.PerfilArtistaActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.MenuPrincipalActivity"/>
+                android:value=".activities.PerfilArtistaActivity"/>
         </activity>
+
+        <!-- Crear lista de reproducción -->
         <activity
             android:name=".activities.CrearListaDeReproduccionActivity"
             android:parentActivityName=".activities.MenuPrincipalActivity">
@@ -128,6 +130,7 @@
                 android:value=".activities.MenuPrincipalActivity"/>
         </activity>
 
+        <!-- Lista de reproducción -->
         <activity
             android:name=".activities.ListaDeReproduccionActivity"
             android:parentActivityName=".activities.MenuPrincipalActivity">

@@ -3,6 +3,7 @@ package com.example.musapiapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -62,12 +63,20 @@ public class PerfilUsuarioActivity extends BaseActivity {
         btnVolver.setOnClickListener(v -> onBackPressed());
 
         // Crear perfil artista
-        btnCrearPerfilArtista.setOnClickListener(v ->
-                startActivityForResult(
-                        new Intent(this, CrearPerfilArtistaActivity.class),
-                        REQ_CREAR_ARTISTA
-                )
-        );
+        btnVerPerfilArtista.setOnClickListener(v -> {
+            UsuarioDTO u = new Gson().fromJson(
+                    Preferencias.recuperarUsuarioJson(this),
+                    UsuarioDTO.class
+            );
+            int usuarioId = u.getIdUsuario();
+            Log.d("PerfilUsuario", "Click VerPerfilArtista, userId=" + usuarioId);
+
+            Intent i = new Intent(this, PerfilArtistaActivity.class);
+            // Asegúrate de usar la constante de PerfilArtistaActivity
+            i.putExtra(PerfilArtistaActivity.EXTRA_ID_ARTISTA, usuarioId);
+            startActivity(i);
+        });
+
 
         // Ver perfil artista
         btnVerPerfilArtista.setOnClickListener(v -> {
