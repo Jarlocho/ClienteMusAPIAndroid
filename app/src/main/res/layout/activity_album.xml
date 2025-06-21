@@ -1,161 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
-
-<!-- CONTENIDO SCROLLEABLE -->
-<ScrollView
-    android:id="@+id/svAlbum"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_above="@+id/barraReproductor"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <!-- SCROLL PRINCIPAL -->
+    <ScrollView
+        android:id="@+id/svAlbum"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <!-- TODO: Aquí va todo tu layout original sin cambios -->
-        <!-- Cabecera: botón volver + portada + datos -->
-        <!-- Botones de acción -->
-        <!-- Sección Canciones -->
-
-        <!-- ... (pegas lo de antes sin modificar) ... -->
-        <!-- Cabecera: botón volver + portada + datos -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
-
-            <ImageButton
-                android:id="@+id/btnVolver"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@android:drawable/ic_menu_revert"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/desc_volver"/>
-
-            <ImageView
-                android:id="@+id/ivPortada"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_marginStart="8dp"
-                android:scaleType="centerCrop"
-                android:src="@android:drawable/ic_menu_gallery"/>
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp">
-
-                <TextView
-                    android:id="@+id/tvNombreAlbum"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nombre del Álbum"
-                    android:textSize="24sp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/tvArtista"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Artista: N/A"
-                    android:textSize="16sp"
-                    android:layout_marginTop="4dp"/>
-
-                <TextView
-                    android:id="@+id/tvFecha"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fecha: N/A"
-                    android:textSize="16sp"
-                    android:layout_marginTop="4dp"/>
-
-                <TextView
-                    android:id="@+id/tvDuracion"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Duración: N/A"
-                    android:textSize="16sp"
-                    android:layout_marginTop="4dp"/>
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Botones de acción -->
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="end"
-            android:layout_marginBottom="16dp">
-
-            <Button
-                android:id="@+id/btnSeguir"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Seguir"/>
-
-            <Button
-                android:id="@+id/btnPublicar"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Publicar"
-                android:layout_marginStart="8dp"/>
-        </LinearLayout>
-
-        <!-- Sección Canciones -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Canciones"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+        android:layout_height="match_parent"
+        android:layout_above="@+id/barraReproductor"
+        android:padding="16dp">
 
         <LinearLayout
-            android:id="@+id/llCanciones"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content">
+
+            <!-- CABECERA -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start|center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <ImageButton
+                    android:id="@+id/btnVolver"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_media_previous"
+                    android:contentDescription="@string/desc_volver" />
+
+                <ImageView
+                    android:id="@+id/ivPortada"
+                    android:layout_width="160dp"
+                    android:layout_height="160dp"
+                    android:layout_marginStart="8dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/ic_launcher_background" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginStart="12dp">
+
+                    <TextView
+                        android:id="@+id/tvNombreAlbum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Nombre del Álbum"
+                        android:textStyle="bold"
+                        android:textSize="20sp" />
+
+                    <TextView
+                        android:id="@+id/tvArtista"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Artista: N/A"
+                        android:textSize="16sp"
+                        android:layout_marginTop="4dp" />
+
+                    <TextView
+                        android:id="@+id/tvFecha"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Fecha publicación: N/A"
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp" />
+
+                    <TextView
+                        android:id="@+id/tvDuracion"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Duración total: N/A"
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- BOTONES DE ACCIÓN -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_marginBottom="16dp">
+
+                <Button
+                    android:id="@+id/btnSubirCancion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Subir Canción" />
+
+                <Button
+                    android:id="@+id/btnPublicar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Publicar Álbum"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <!-- LISTA DE CANCIONES -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Canciones"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/llCanciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- REPRODUCTOR MINI (FIJO ABAJO) -->
+    <LinearLayout
+        android:id="@+id/barraReproductor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="#EEEEEE"
+        android:padding="8dp"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/txtMiniTitulo"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Canción actual"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/btnMiniPlayPause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_play"
+            android:background="@android:color/transparent" />
     </LinearLayout>
-</ScrollView>
-
-<!-- BARRA FIJA ABAJO -->
-<LinearLayout
-    android:id="@+id/barraReproductor"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:orientation="horizontal"
-    android:background="#EEEEEE"
-    android:padding="8dp"
-    android:gravity="center_vertical"
-    android:visibility="gone">
-
-    <TextView
-        android:id="@+id/txtMiniTitulo"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:text="Canción actual"
-        android:textStyle="bold" />
-
-    <ImageButton
-        android:id="@+id/btnMiniPlayPause"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_play"
-        android:background="@android:color/transparent" />
-</LinearLayout>
-
 </RelativeLayout>

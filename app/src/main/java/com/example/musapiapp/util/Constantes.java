@@ -11,7 +11,7 @@ public class Constantes {
      * Pablo: 192.168.1.17
      * nginx: 172.24.128.1
      */
-    public static final String IP = "10.50.38.2";
+    public static final String IP = "192.168.1.70";
     public static final String URL_BASE = "http://"+IP+":" + PUERTO;
 
     //public static final String URL_BASE = "http://"+IP;

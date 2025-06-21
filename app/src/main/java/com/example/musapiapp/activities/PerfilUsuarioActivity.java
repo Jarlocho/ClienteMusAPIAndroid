@@ -67,19 +67,20 @@ public class PerfilUsuarioActivity extends BaseActivity {
         btnVolver.setOnClickListener(v -> onBackPressed());
 
         // Crear perfil artista
-        btnVerPerfilArtista.setOnClickListener(v -> {
+        btnCrearPerfilArtista.setOnClickListener(v -> {
             UsuarioDTO u = new Gson().fromJson(
                     Preferencias.recuperarUsuarioJson(this),
                     UsuarioDTO.class
             );
             int usuarioId = u.getIdUsuario();
-            Log.d("PerfilUsuario", "Click VerPerfilArtista, userId=" + usuarioId);
+            Log.d("PerfilUsuario", "Click CrearPerfilArtista, userId=" + usuarioId);
 
-            Intent i = new Intent(this, PerfilArtistaActivity.class);
-            // Asegúrate de usar la constante de PerfilArtistaActivity
-            i.putExtra(PerfilArtistaActivity.EXTRA_ID_ARTISTA, usuarioId);
-            startActivity(i);
+            Intent i = new Intent(this, CrearPerfilArtistaActivity.class);
+            // Usa tu propia constante de clave (puedes definir EXTRA_ID_USUARIO o así)
+            i.putExtra(EXTRA_ID_ARTISTA, usuarioId);
+            startActivityForResult(i, REQ_CREAR_ARTISTA);
         });
+
 
 
         // Ver perfil artista

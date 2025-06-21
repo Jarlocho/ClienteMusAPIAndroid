@@ -10,12 +10,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.musapiapp.R;
+import com.example.musapiapp.dto.InfoAlbumDTO;
 
 public class SubirContenidoActivity extends AppCompatActivity {
     public static final String EXTRA_ID_ARTISTA = "EXTRA_ID_ARTISTA";
+    private static final int REQ_CREAR_ALBUM = 2001;
+
 
     private int idArtista;
     private Button btnSubirCancion;
+    private Button btnCrearAlbum;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,5 +44,30 @@ public class SubirContenidoActivity extends AppCompatActivity {
             intent.putExtra(SubirContenidoActivity.EXTRA_ID_ARTISTA, idArtista);
             startActivity(intent);
         });
+
+        btnCrearAlbum = findViewById(R.id.btnCrearAlbum);
+
+        btnCrearAlbum.setOnClickListener(v -> {
+            Intent intent = new Intent(SubirContenidoActivity.this, CrearAlbumActivity.class);
+            intent.putExtra(EXTRA_ID_ARTISTA, idArtista);
+            startActivityForResult(intent, REQ_CREAR_ALBUM);
+        });
+
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQ_CREAR_ALBUM && resultCode == RESULT_OK && data != null) {
+            InfoAlbumDTO album = (InfoAlbumDTO) data.getSerializableExtra(AlbumActivity.EXTRA_ALBUM_PENDIENTE);
+            if (album != null) {
+                Intent i = new Intent(this, AlbumActivity.class);
+                i.putExtra(AlbumActivity.EXTRA_ALBUM_PENDIENTE, album);
+                startActivity(i);
+            }
+        }
+    }
+
+
 }

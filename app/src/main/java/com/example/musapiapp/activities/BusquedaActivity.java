@@ -79,7 +79,7 @@ public class BusquedaActivity extends BaseActivity {
                     case ARTISTA:
                         BusquedaArtistaDTO ar = (BusquedaArtistaDTO) item.getDto();
                         Intent ari = new Intent(BusquedaActivity.this, PerfilArtistaActivity.class);
-                        ari.putExtra(PerfilArtistaActivity.EXTRA_ID_ARTISTA, ar.getIdArtista());
+                        ari.putExtra(PerfilArtistaActivity.EXTRA_ID_ARTISTA, ar);
                         startActivity(ari);
                         break;
                     default:

@@ -1,27 +1,31 @@
 package com.example.musapiapp.activities;
 
-import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.musapiapp.R;
+import com.example.musapiapp.dto.InfoAlbumDTO;
 import com.example.musapiapp.dto.RespuestaCliente;
 import com.example.musapiapp.network.ApiCliente;
-import com.example.musapiapp.network.ServicioContenido;
+import com.example.musapiapp.network.ServicioAlbum;
 import com.example.musapiapp.util.Preferencias;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -31,132 +35,167 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CrearAlbumActivity extends AppCompatActivity {
-    private static final int PICK_IMAGE = 1001;
-    private ImageView ivPortada;
-    private Uri portadaUri = null;
-    private EditText etNombre;
-    private Button btnSubirFoto, btnGuardar, btnCancelar;
+
+    private static final int REQ_IMG = 1001;
+
+    private EditText etNombreAlbum;
+    private ImageView ivPortadaAlbum;
+    private Button btnSeleccionarPortada, btnCrearAlbum;
+
+    private Uri uriPortada;
+
+    private int idArtista;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_crear_album);
 
-        ivPortada    = findViewById(R.id.ivPortada);
-        etNombre     = findViewById(R.id.etNombreAlbum);
-        btnSubirFoto = findViewById(R.id.btnSubirFoto);
-        btnGuardar   = findViewById(R.id.btnGuardarAlbum);
-        btnCancelar  = findViewById(R.id.btnCancelarAlbum);
-        ImageButton btnVolver = findViewById(R.id.btnVolverCrear);
+        etNombreAlbum        = findViewById(R.id.etNombreAlbum);
+        ivPortadaAlbum       = findViewById(R.id.ivPortadaAlbum);
+        btnSeleccionarPortada = findViewById(R.id.btnSeleccionarPortada);
+        btnCrearAlbum         = findViewById(R.id.btnCrearAlbum);
 
-        btnVolver.setOnClickListener(v -> finish());
-        btnCancelar.setOnClickListener(v -> finish());
+        idArtista = getIntent().getIntExtra(SubirContenidoActivity.EXTRA_ID_ARTISTA, -1);
+        if (idArtista < 0) {
+            Toast.makeText(this, "ID de artista no válido", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
-        btnSubirFoto.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("image/*");
-            startActivityForResult(intent, PICK_IMAGE);
-        });
+        btnSeleccionarPortada.setOnClickListener(v -> seleccionarPortada());
+        btnCrearAlbum.setOnClickListener(v -> crearAlbum());
+    }
 
-        btnGuardar.setOnClickListener(v -> crearAlbum());
+    private void seleccionarPortada() {
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.setType("image/*");
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(i, REQ_IMG);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
-            portadaUri = data.getData();
-            ivPortada.setImageURI(portadaUri);
+    protected void onActivityResult(int reqCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+        if (reqCode == REQ_IMG && resultCode == RESULT_OK && data != null) {
+            uriPortada = data.getData();
+            getContentResolver().takePersistableUriPermission(
+                    uriPortada, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            Glide.with(this).load(uriPortada).into(ivPortadaAlbum);
         }
     }
 
     private void crearAlbum() {
-        String nombre = etNombre.getText().toString().trim();
-        if (nombre.isEmpty()) {
-            etNombre.setError("Requerido");
+        String nombre = etNombreAlbum.getText().toString().trim();
+
+        if (nombre.isEmpty() || uriPortada == null) {
+            Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // 1) Part para el nombre
-        RequestBody nombrePart =
-                RequestBody.create(MediaType.parse("text/plain"), nombre);
+        try {
+            byte[] fotoBytes = readAllBytes(uriPortada);
 
-        // 2) Part para la foto (si la hay)
-        MultipartBody.Part fotoPart = null;
-        if (portadaUri != null) {
-            try {
-                File file = copyUriToFile(portadaUri);
-                RequestBody reqFile =
-                        RequestBody.create(MediaType.parse("image/*"), file);
-                fotoPart = MultipartBody.Part.createFormData(
-                        "foto", file.getName(), reqFile);
-            } catch (Exception e) {
-                Toast.makeText(this,
-                        "No se pudo procesar la imagen", Toast.LENGTH_LONG).show();
-                return;
-            }
-        }
+            Map<String, RequestBody> campos = new HashMap<>();
+            campos.put("nombre", RequestBody.create(MediaType.parse("text/plain"), nombre));
+            campos.put(
+                    "idUsuario",
+                    RequestBody.create(
+                            MediaType.parse("text/plain"),
+                            String.valueOf(Preferencias.obtenerIdUsuario(this))
+                    )
+            );
 
-        // 3) Llamada Retrofit
-        ServicioContenido srv = ApiCliente
-                .getClient(this)
-                .create(ServicioContenido.class);
+            MultipartBody.Part partFoto = MultipartBody.Part.createFormData(
+                    "foto",
+                    obtenerNombreArchivo(uriPortada),
+                    RequestBody.create(MediaType.parse("image/jpeg"), fotoBytes)
+            );
 
-        srv.crearAlbum(
-                "Bearer " + Preferencias.obtenerToken(this),
-                nombrePart, fotoPart
-        ).enqueue(new Callback<RespuestaCliente<Void>>() {
-            @Override
-            public void onResponse(Call<RespuestaCliente<Void>> call,
-                                   Response<RespuestaCliente<Void>> resp) {
-                if (resp.isSuccessful()) {
-                    Toast.makeText(CrearAlbumActivity.this,
-                            "Álbum creado!", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(CrearAlbumActivity.this,
-                            "Error: " + resp.code(), Toast.LENGTH_LONG).show();
+            ServicioAlbum svc = ApiCliente.getClient(this).create(ServicioAlbum.class);
+            svc.crearAlbum(campos, partFoto).enqueue(new Callback<RespuestaCliente<String>>() {
+                @Override
+                public void onResponse(Call<RespuestaCliente<String>> call,
+                                       Response<RespuestaCliente<String>> resp) {
+                    if (resp.isSuccessful()) {
+                        buscarAlbumRecienCreado(nombre);
+                    } else {
+                        Toast.makeText(CrearAlbumActivity.this,
+                                "Error HTTP " + resp.code(), Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-            @Override
-            public void onFailure(Call<RespuestaCliente<Void>> call, Throwable t) {
-                Toast.makeText(CrearAlbumActivity.this,
-                        "Fallo de red: " + t.getMessage(),
-                        Toast.LENGTH_LONG).show();
-            }
-        });
+
+                @Override
+                public void onFailure(Call<RespuestaCliente<String>> call, Throwable t) {
+                    Toast.makeText(CrearAlbumActivity.this,
+                            "Fallo de red: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        } catch (Exception e) {
+            Toast.makeText(this, "Error al procesar imagen", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    /**
-     * Copia el contenido de la Uri a un archivo en cache y lo devuelve.
-     */
-    private File copyUriToFile(Uri uri) throws Exception {
-        ContentResolver cr = getContentResolver();
-        String filename = queryFileName(uri);
-        File outFile = new File(getCacheDir(), filename);
-        try (InputStream in = cr.openInputStream(uri);
-             FileOutputStream out = new FileOutputStream(outFile)) {
+
+    private void buscarAlbumRecienCreado(String nombreEsperado) {
+        ServicioAlbum svc = ApiCliente.getClient(this).create(ServicioAlbum.class);
+        svc.obtenerAlbumesPendientes(idArtista)
+                .enqueue(new Callback<RespuestaCliente<List<InfoAlbumDTO>>>() {
+                    @Override
+                    public void onResponse(Call<RespuestaCliente<List<InfoAlbumDTO>>> call,
+                                           Response<RespuestaCliente<List<InfoAlbumDTO>>> resp) {
+                        if (resp.isSuccessful() && resp.body() != null) {
+                            List<InfoAlbumDTO> lista = resp.body().getDatos();
+                            for (InfoAlbumDTO album : lista) {
+                                if (album.getNombre().equalsIgnoreCase(nombreEsperado)) {
+                                    // Devolverlo al padre
+                                    Intent result = new Intent();
+                                    result.putExtra(AlbumActivity.EXTRA_ALBUM_PENDIENTE, album);
+                                    setResult(RESULT_OK, result);
+                                    finish();
+                                    return;
+                                }
+                            }
+                            Toast.makeText(CrearAlbumActivity.this,
+                                    "Álbum creado, pero no encontrado para mostrar", Toast.LENGTH_LONG).show();
+                            finish();
+                        } else {
+                            Toast.makeText(CrearAlbumActivity.this,
+                                    "No se pudo verificar el álbum creado", Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<RespuestaCliente<List<InfoAlbumDTO>>> call, Throwable t) {
+                        Toast.makeText(CrearAlbumActivity.this,
+                                "Error de red al recuperar álbum", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                });
+    }
+
+    private byte[] readAllBytes(Uri uri) throws Exception {
+        try (InputStream in = getContentResolver().openInputStream(uri);
+             ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             byte[] buf = new byte[4096];
             int len;
-            while ((len = in.read(buf)) > 0) {
-                out.write(buf, 0, len);
-            }
+            while ((len = in.read(buf)) > 0) out.write(buf, 0, len);
+            return out.toByteArray();
         }
-        return outFile;
     }
 
-    /**
-     * Obtiene el nombre original del fichero de la Uri, o un fallback.
-     */
-    private String queryFileName(Uri uri) {
-        String result = "tempfile";
-        try (android.database.Cursor cursor =
-                     getContentResolver().query(uri, null, null, null, null)) {
+    private String obtenerNombreArchivo(Uri uri) {
+        try (Cursor cursor = getContentResolver().query(uri,
+                new String[]{OpenableColumns.DISPLAY_NAME},
+                null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
-                int idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
-                if (idx >= 0) result = cursor.getString(idx);
+                return cursor.getString(cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME));
             }
-        }
-        return result;
+        } catch (Exception ignored) {}
+        return "portada.jpg";
     }
+
+
 }

@@ -13,4 +13,14 @@
         android:text="Subir Canción"
         android:textAllCaps="false" />
 
+    <Button
+        android:id="@+id/btnCrearAlbum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnSubirCancion"
+        android:layout_marginTop="16dp"
+        android:text="Crear Álbum"
+        android:textAllCaps="false" />
+
+
 </RelativeLayout>

@@ -1,5 +1,6 @@
 package com.example.musapiapp.network;
 
+import com.example.musapiapp.dto.BusquedaCancionDTO;
 import com.example.musapiapp.dto.CancionDTO;
 import com.example.musapiapp.dto.CategoriaMusicalDTO;
 import com.example.musapiapp.dto.RespuestaCliente;
@@ -39,5 +40,11 @@ public interface ServicioCancion {
             @Part("posicionEnAlbum") RequestBody posicionEnAlbum,
             @Part("idPerfilArtistas") List<RequestBody> idPerfilArtistas
     );
+
+    @GET("canciones/album/{idAlbum}/canciones")
+    Call<RespuestaCliente<List<BusquedaCancionDTO>>> getCancionesPorAlbum(
+            @Path("idAlbum") int idAlbum
+    );
+
 }
 
